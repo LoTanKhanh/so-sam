@@ -276,7 +276,6 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
   </div>
 
   <div class="sync" id="sync" hidden><span id="syncTime"></span><button class="link" id="syncBtn">Tải lại</button></div>
-  <div id="health"></div>
   <div id="outbox"></div>
   <div id="msg"></div>
   <div class="load" id="loading">Đang tải dữ liệu từ sheet…</div>
@@ -489,7 +488,6 @@ const DEMO = {
     { qty: 4, t330: 68000, t500: 98000 }, { qty: 5, t330: 82000, t500: 119000 }
   ],
   places: ['CHUNG CƯ'], pays: ['Tiền mặt', 'Banking', 'Momo'],
-  health: { setup: true, lastBackup: new Date(Date.now() - 6 * 3600e3).toISOString(), backupError: '', lastSync: new Date(Date.now() - 4 * 60000).toISOString(), syncError: '', unsynced: 1, failed: 0 },
   buy: {
     items: [
       { name: 'Mía', unit: 'g', group: 'NL', price: 10, place: 'Chợ' }, { name: 'Rễ tranh', unit: 'g', group: 'NL', price: 45.45, place: 'Chợ' },
@@ -648,7 +646,7 @@ const errText = r => (ERR[r.error] ? ERR[r.error](r) : 'Không lưu được (' 
 
 /* ================= Tải dữ liệu ================= */
 function accept(r) {
-  S.data = { customers: r.customers, custGroups: r.custGroups || [], products: r.products, tiers: r.tiers, places: r.places, pays: r.pays, buy: r.buy, make: r.make, health: r.health || null };
+  S.data = { customers: r.customers, custGroups: r.custGroups || [], products: r.products, tiers: r.tiers, places: r.places, pays: r.pays, buy: r.buy, make: r.make };
   S.syncAt = Date.now();
   if (!isDemo()) { store.set('sam.data', S.data); store.set('sam.syncAt', S.syncAt); }
 }
@@ -1114,27 +1112,8 @@ $('cfDelete').addEventListener('click', async () => {
 });
 
 /* ================= Đồng bộ với sheet ================= */
-// Tình trạng an toàn dữ liệu: sao lưu đêm, nhật ký đẩy sang Supabase, lần ghi lỗi giữa chừng.
-const ago = iso => (iso ? (Date.now() - new Date(iso.slice(0, 24)).getTime()) / 3600e3 : Infinity);
-const errMsg = e => String(e).replace(/^\S+\s/, '').slice(0, 120);
-function healthIssues(h) {
-  if (!h) return [];
-  const out = [];
-  if (!h.setup) out.push('Chưa bật sao lưu tự động. Mở Apps Script, chọn hàm caiDatTuDong rồi bấm Chạy.');
-  if (h.backupError) out.push('Sao lưu lần gần nhất bị lỗi: ' + errMsg(h.backupError));
-  else if (h.setup && ago(h.lastBackup) > 36) out.push(h.lastBackup ? 'Bản sao lưu gần nhất đã hơn 36 tiếng.' : 'Chưa có bản sao lưu nào.');
-  if (h.syncError) out.push('Đẩy nhật ký sang Supabase bị lỗi: ' + errMsg(h.syncError));
-  else if (h.setup && h.unsynced > 0 && ago(h.lastSync) > 1) out.push(h.unsynced + ' dòng nhật ký chưa đẩy sang Supabase hơn 1 tiếng.');
-  if (h.failed > 0) out.push(h.failed + ' lần ghi bị lỗi giữa chừng trong 7 ngày. Dữ liệu gửi lên vẫn còn trong sheet ẩn NHAT_KY_APP, đối chiếu lại rồi nhập bù.');
-  return out;
-}
-function renderHealth() {
-  const issues = S.data ? healthIssues(S.data.health) : [];
-  $('health').replaceChildren(issues.length ? h('div', { class: 'note warn', role: 'status' },
-    h('b', {}, 'An toàn dữ liệu cần xem: '), issues.join(' ')) : '');
-}
 function renderSync() {
-  $('sync').hidden = !S.data; renderHealth();
+  $('sync').hidden = !S.data;
   const d = new Date(S.syncAt), today = new Date().toDateString() === d.toDateString();
   $('syncTime').textContent = S.syncAt ? 'Dữ liệu từ sheet lúc ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + (today ? '' : ' ngày ' + p2(d.getDate()) + '/' + p2(d.getMonth() + 1)) : 'Chưa tải được dữ liệu mới';
 }
@@ -1320,7 +1299,6 @@ function renderHome() {
   const topQty = Math.max(1, ...R.products.map(p => p.qty));
   const stockValue = R.stock.reduce((s, x) => s + (x.value || 0), 0);
   box.replaceChildren(
-    healthPanel(),
     sec('Hôm nay', h('div', { class: 'stats' },
       h('div', {}, h('b', { class: 'num' }, String(R.today.bottles)), h('small', {}, 'chai')),
       h('div', {}, h('b', { class: 'num' }, String(R.today.orders)), h('small', {}, 'đơn')),
@@ -1353,17 +1331,6 @@ function renderHome() {
       h('span', {}, m.cot), h('span', { class: 'r num' }, h('b', {}, qfmt(m.out) + ' lít cốt'), h('small', {}, m.batches + ' mẻ, ' + qfmt(m.water) + ' lít nước')))))) : '',
     R.byGroup.length ? sec('Chi theo nhóm', h('div', { class: 'panel' }, R.byGroup.map(g => { const n = (S.data.buy.groups.find(x => x.code === g.code) || {}).name || g.code;
       return h('div', { class: 'trow' }, h('span', {}, n), h('span', { class: 'r num' }, vnd(g.cost))); }))) : '');
-}
-
-function healthPanel() {
-  const hl = S.data.health;
-  if (!hl) return '';
-  const when = iso => { if (!iso) return 'chưa có'; const d = new Date(iso.slice(0, 24)); return p2(d.getHours()) + ':' + p2(d.getMinutes()) + ' ngày ' + p2(d.getDate()) + '/' + p2(d.getMonth() + 1); };
-  const ok = !healthIssues(hl).length;
-  return h('section', {}, h('h2', {}, ok ? 'An toàn dữ liệu: ổn' : 'An toàn dữ liệu: cần xem'), h('div', { class: 'panel' },
-    h('div', { class: 'trow' + (hl.backupError || ago(hl.lastBackup) > 36 ? ' low' : '') }, h('span', {}, 'Sao lưu cả file gần nhất'), h('span', { class: 'r num' }, h('b', {}, when(hl.lastBackup)), h('small', {}, 'Drive, giữ 30 bản'))),
-    h('div', { class: 'trow' + (hl.syncError ? ' low' : '') }, h('span', {}, 'Nhật ký đẩy sang Supabase'), h('span', { class: 'r num' }, h('b', {}, when(hl.lastSync)), h('small', {}, hl.unsynced ? hl.unsynced + ' dòng đang chờ, 10 phút đẩy một lần' : 'Không còn dòng chờ'))),
-    h('div', { class: 'trow' + (hl.failed ? ' low' : '') }, h('span', {}, 'Lần ghi lỗi giữa chừng, 7 ngày'), h('span', { class: 'r num' }, h('b', {}, String(hl.failed))))));
 }
 
 /* ================= Giá bán và chiết khấu ================= */
