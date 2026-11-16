@@ -24,7 +24,8 @@
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent}
 button,input{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none;padding:0}
+button{cursor:pointer;border:0;background:none;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+html,body{touch-action:manipulation}
 :focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
 [hidden]{display:none!important}
@@ -780,6 +781,8 @@ async function demoApi(b) {
     const next = { accept: 'Đã nhận', reject: 'Từ chối', ship: 'Đang giao', done: 'Đã giao' }[b.act];
     if (next) o.status = next;
     if (b.paid || b.act === 'paid') o.money = 'Đã thanh toán';
+    if (b.pay && (b.act === 'done' || b.act === 'paid')) { o.bank = b.pay === 'bank'; o.money = o.bank ? 'Chưa thanh toán' : 'Trả khi nhận hàng'; }
+    if (b.paid || b.act === 'paid') o.money = 'Đã thanh toán';
     if (b.act === 'pay') { o.bank = b.pay === 'bank'; o.money = o.bank ? 'Chưa thanh toán' : 'Trả khi nhận hàng'; }
     if ((b.act === 'done' || b.act === 'book') && !o.sale) o.sale = 'BH-DEMO/' + o.code;
     return { ok: true, order: o, sale: o.sale };
@@ -813,6 +816,7 @@ const ERR = {
   NEED_MEMBER: () => 'Khách chưa phải thành viên nên chưa dùng được voucher hoặc lá.', VOUCHER_NONE: () => 'Khách không có voucher này.',
   VOUCHER_USED: () => 'Voucher này đang dùng cho đơn khác.', VOUCHER_EXPIRED: () => 'Voucher đã hết hạn.', VOUCHER_MIN: () => 'Đơn chưa đủ điều kiện dùng voucher này.',
   LA_MIN: () => 'Đơn hoặc số lá của khách chưa đủ một mốc để dùng lá.', LA_CHANGED: () => 'Số lá của khách vừa thay đổi. Thử lại.',
+  BAN_FORMULA: () => 'Cột giá trong BÁN HÀNG đang có ô lỗi nên chưa đổi sang số được. Báo em để xử lý, chưa lưu gì.',
   UNKNOWN_ACTION: () => 'Script trên sheet là bản cũ. Dán lại Code.gs mới rồi deploy phiên bản mới.',
   SERVER: r => 'Sheet báo lỗi: ' + (r.message || 'không rõ') + '. Chưa lưu.'
 };
@@ -894,7 +898,8 @@ function barState() {
     const P = S.sale.pos;
     if (P.step === 'after') return null;
     const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
-    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(P.quote && o.count ? P.quote.total : o.total), label: P.busy ? 'Đang lên đơn…' : 'Đặt hàng', ok: o.count > 0 && !P.busy };
+    const pq = P.ship ? S.sale.q.quote : P.quote;
+    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(pq && o.count ? pq.total : o.total), label: P.busy ? 'Đang lên đơn…' : (P.ship ? 'Lên đơn giao' : 'Đặt hàng'), ok: o.count > 0 && !P.busy };
   }
   if (S.tab === 'sale') {
     const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
@@ -1011,7 +1016,7 @@ function scheduleQuote(force) {
   }, 350);
 }
 function renderQExtra() {
-  const box = $('qExtra'), q = S.sale.q;
+  const box = (!editing() && $('posQx')) || $('qExtra'), q = S.sale.q;
   if (!box) return;
   const info = q.info, quo = q.quote, kids = [];
   if (info && info.member) {
@@ -1022,7 +1027,11 @@ function renderQExtra() {
     }
     if ((info.la || 0) > 0) kids.push(h('div', { style: 'margin-top:6px;color:var(--muted)' }, laMsgPos(info.la, info.laStep)));
     if ((info.la || 0) >= (info.laStep || 5000)) kids.push(h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: q.useLa, onchange: e => { q.useLa = e.target.checked; renderQExtra(); scheduleQuote(true); } }), 'Khách dùng lá để trừ tiền'));
-  } else if (info && info.found === false && normPhone(q.phone)) kids.push(h('div', { style: 'color:var(--muted)' }, 'Chưa là thành viên. Khách đăng ký trên trang đặt hàng để có voucher và lá.'));
+  } else if (info && !info.member && normPhone(q.phone)) {
+    kids.push(h('div', { style: 'color:var(--muted)' }, 'Chưa là thành viên. Khách đăng ký trên trang đặt hàng để có voucher và lá.'));
+    if ((info.open || []).length) kids.push(h('div', { style: 'margin-top:8px' }, 'Voucher đang chạy:'),
+      h('div', { class: 'chips' }, info.open.map(v => chip(v.name + ' · ' + v.text.replace('Giảm ', '−'), q.voucher === v.id, () => { q.voucher = q.voucher === v.id ? '' : v.id; renderQExtra(); scheduleQuote(true); }))));
+  }
   if (quo) {
     const gifts = quo.lines.filter(l => l.gift).map(l => '🎁 tặng ' + l.qty + ' ' + splitName(l.name).base + ' ' + splitName(l.name).rest);
     const rows = [].concat(quo.applied.map(a => a.name + (a.gift ? '' : a.save ? ' (−' + vnd(a.save) + ')' : '')), quo.voucher ? ['Voucher ' + quo.voucher.name + ' (−' + vnd(quo.voucher.save) + ')'] : [], gifts);
@@ -1108,7 +1117,7 @@ function renderProducts() {
   if (tgt) tgt.replaceChildren(...out);
 }
 function renderBill() {
-  if (!editing()) { posQuote(); return; }
+  if (!editing()) { if (S.sale.pos.ship) { scheduleQuote(); renderBar(); } else posQuote(); return; }
   const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty), bill = $('bill');
   scheduleQuote();
   if (!o.lines.length) { bill.replaceChildren(h('p', { class: 'empty' }, 'Bấm + ở món khách mua. Giảm giá theo số lượng tự tính ở đây.')); return; }
@@ -1191,11 +1200,50 @@ function posItems() {
 function renderPos() {
   const P = S.sale.pos;
   if (P.step === 'after') { renderPosAfter(); return; }
+  S.sale.mode = P.ship ? 'queue' : 'direct';
   $('posBox').replaceChildren(
+    h('section', {}, h('div', { class: 'chips' },
+      chip('Tại quầy', !P.ship, () => { P.ship = false; renderPos(); renderBar(); }),
+      chip('Giao tận nơi', !!P.ship, () => { P.ship = true; renderPos(); renderBar(); }))),
     h('div', { id: 'posPromos' }),
-    h('section', {}, h('h2', {}, 'Chọn món'), h('div', { id: 'posProducts' }), h('div', { id: 'posSum' })));
+    h('section', {}, h('h2', {}, 'Chọn món'), h('div', { id: 'posProducts' }), h('div', { id: 'posSum' })),
+    h('section', { id: 'posShip', hidden: !P.ship }, h('h2', {}, 'Giao cho ai, ở đâu'), h('div', { id: 'posShipBox' })));
   if (!MK.rows && !MK.busy) loadMk();
-  renderPosPromos(); renderProducts(); posQuote(true);
+  renderPosPromos(); renderProducts();
+  if (P.ship) { renderPosShip(); scheduleQuote(true); } else posQuote(true);
+}
+// Đơn giao tận nơi (khách gọi điện, nhắn tin): nhập khách và địa chỉ ngay, lên đơn vào hàng chờ cho bếp.
+function renderPosShip() {
+  const box = $('posShipBox'), q = S.sale.q; if (!box) return;
+  const inp = (k, ph, mode) => h('input', { class: 'search', placeholder: ph, value: q[k], inputmode: mode || 'text', autocomplete: 'off', name: 'sam-ship-' + k, oninput: e => { q[k] = e.target.value; if (k === 'phone') phoneChanged(); } });
+  box.replaceChildren(
+    inp('phone', 'Số điện thoại khách', 'tel'), inp('name', 'Tên khách'),
+    h('div', { class: 'chips', style: 'margin:10px 0' }, chip((S.data.building || 'Chung cư'), q.area === 'cc', () => { q.area = 'cc'; renderPosShip(); scheduleQuote(true); }), chip('Bên ngoài', q.area === 'out', () => { q.area = 'out'; renderPosShip(); scheduleQuote(true); })),
+    inp('place', q.area === 'cc' ? 'Số căn hộ, ví dụ A0605' : 'Địa chỉ giao hàng'),
+    h('div', { class: 'chips', style: 'margin:10px 0' }, chip('Tiền mặt', q.pay === 'cash', () => { q.pay = 'cash'; renderPosShip(); }), chip('Chuyển khoản', q.pay === 'bank', () => { q.pay = 'bank'; renderPosShip(); })),
+    h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: q.paid, onchange: e => { q.paid = e.target.checked; } }), 'Khách đã trả tiền rồi'),
+    h('div', { id: 'posQx' }));
+  renderQExtra();
+}
+async function posShipOrder() {
+  const P = S.sale.pos, q = S.sale.q;
+  if (P.busy) return;
+  const items = posItems(); if (!items.length) return;
+  const phone = normPhone(q.phone);
+  if (!phone) { showMsg('err', 'Nhập số điện thoại khách (10 số) để giao hàng.'); toTop(); return; }
+  if (!q.place.trim()) { showMsg('err', q.area === 'cc' ? 'Chưa nhập số căn hộ.' : 'Chưa nhập địa chỉ giao.'); toTop(); return; }
+  P.busy = true; P.rid = P.rid || uid(); renderBar(); showMsg(null);
+  try {
+    const r = await api({ action: 'orderCreate', requestId: P.rid, items, name: q.name.trim(), phone, area: q.area,
+      apt: q.area === 'cc' ? q.place.trim() : '', addr: q.area === 'out' ? q.place.trim() : '', pay: q.pay, paid: !!q.paid, voucher: q.voucher || '', useLa: !!q.useLa, status: 'ok', src: 'Tiệm lên đơn' });
+    P.busy = false;
+    if (!r.ok) { showMsg('err', errText(r)); renderBar(); toTop(); return; }
+    if (r.order && ORD.list) ORD.list.unshift(r.order);
+    S.sale.pos = posBlank(); S.sale.qty = {}; S.sale.giftOpen = {}; S.sale.q = { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false, voucher: '', useLa: false, info: null, quote: null, qkey: '' };
+    loadOrders(true);
+    showMsg('ok', 'Đã lên đơn giao ', h('b', {}, r.order ? r.order.code : ''), ' (' + vnd(r.order ? r.order.total : 0) + ') vào hàng chờ. Xem ở mục Đơn.');
+    renderAll(); toTop();
+  } catch (e) { P.busy = false; showMsg('err', 'Mất kết nối. Chưa lên được đơn, bấm lại (không bị ghi trùng).'); renderBar(); toTop(); }
 }
 function renderPosPromos() {
   const box = $('posPromos'); if (!box) return;
@@ -1213,16 +1261,26 @@ function posQuote(force) {
   const P = S.sale.pos;
   if (!S.cfg || !S.data) return;
   const items = posItems(), phone = P.step === 'after' ? normPhone(P.phone) : '';
-  const key = JSON.stringify([items, phone, P.voucher || '', !!P.useLa]);
+  const ocode = P.step === 'after' && P.order ? P.order.code : '';
+  const key = JSON.stringify([items, phone, P.voucher || '', !!P.useLa, ocode]);
   if (!items.length) { P.quote = null; P.qkey = ''; renderPosSum(); renderBar(); return; }
   if (key === P.qkey && !force) { renderPosSum(); return; }
   clearTimeout(qTimer);
+  // Khách chưa có SĐT, không voucher, không lá, và Tiệm không có chương trình cho mọi khách: tính ngay tại máy, không gọi máy chủ.
+  if (!phone && !P.voucher && !P.useLa && !ocode && S.anyAll === false && Date.now() - (S.anyAllAt || 0) < 600000) {
+    const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
+    P.quote = { lines: o.lines.filter(l => l.group !== 'CHO TẶNG'), gross: o.gross, discount: o.discount, tierDisc: o.discount, progDisc: 0, vDisc: 0,
+      goodsNet: o.total, la: 0, laMax: 0, ship: 0, total: o.total, applied: [], voucher: null, vErr: '', laErr: '' };
+    P.qkey = key; P.qerr = '';
+    renderPosSum(); renderBar(); return;
+  }
   qTimer = setTimeout(async () => {
     try {
-      const r = await api({ action: 'quote', items, area: 'cc', phone, voucher: P.voucher || '', useLa: !!P.useLa });
+      const r = await api({ action: 'quote', items, area: 'cc', phone, voucher: P.voucher || '', useLa: !!P.useLa, code: ocode });
       if (!r.ok) { P.quote = null; P.qerr = errText(r); }
       else {
         P.quote = r.quote; P.qkey = key; P.qerr = '';
+        if (r.quote && typeof r.quote.anyAll === 'boolean') { S.anyAll = r.quote.anyAll; S.anyAllAt = Date.now(); }
         if (r.quote.vErr) { P.qerr = errText({ error: r.quote.vErr }); P.voucher = ''; }
         if (r.quote.laErr) { P.qerr = errText({ error: r.quote.laErr }); P.useLa = false; }
       }
@@ -1240,6 +1298,7 @@ function renderPosSum() {
 async function posOrder() {
   const P = S.sale.pos;
   if (P.busy || P.step !== 'menu') return;
+  if (P.ship) return posShipOrder();
   const items = posItems(); if (!items.length) return;
   P.busy = true; P.rid = P.rid || uid(); renderBar(); showMsg(null);
   try {
@@ -1307,6 +1366,7 @@ function renderPosCust() {
     if ((info.la || 0) > 0) kids.push(h('div', { style: 'margin-top:6px;color:var(--muted)' }, laMsgPos(info.la, info.laStep)));
     if ((info.la || 0) >= (info.laStep || 5000)) kids.push(h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: P.useLa, onchange: e => { P.useLa = e.target.checked; upd(); } }), 'Khách dùng lá để trừ tiền'));
   } else {
+    if ((info.open || []).length) kids.push(h('div', { style: 'margin-top:8px' }, 'Voucher đang chạy:'), h('div', { class: 'chips' }, info.open.map(v => chip(v.name + ' · ' + v.text.replace('Giảm ', '−'), P.voucher === v.id, () => { P.voucher = P.voucher === v.id ? '' : v.id; upd(); }))));
     kids.push(h('div', { style: 'margin-top:8px' }, 'Chưa là thành viên. Đăng ký giúp khách để tích lá và nhận voucher chào mừng:'),
       h('div', { class: 'fld' },
         h('input', { class: 'search', placeholder: 'Tên khách', value: P.name || '', autocomplete: 'off', name: 'sam-pos-name', oninput: e => { P.name = e.target.value; renderPosAct(); } }),
@@ -1361,11 +1421,7 @@ async function posFinish() {
   const P = S.sale.pos, o = P.order; if (P.busy) return;
   P.busy = true; renderPosAct(); showMsg(null);
   try {
-    if ((P.pay === 'bank') !== !!o.bank) {
-      const a = await api({ action: 'orderAct', requestId: uid(), code: o.code, act: 'pay', pay: P.pay });
-      if (!a.ok) { P.busy = false; showMsg('err', errText(a)); renderPosAct(); toTop(); return; }
-    }
-    const r = await api({ action: 'orderAct', requestId: uid(), code: o.code, act: 'done', paid: true });
+    const r = await api({ action: 'orderAct', requestId: uid(), code: o.code, act: 'done', paid: true, pay: (P.pay === 'bank') !== !!o.bank ? P.pay : '' });   // đổi cách trả + giao xong trong một lệnh
     P.busy = false;
     if (!r.ok) { showMsg('err', errText(r)); renderPosAct(); toTop(); return; }
     dirty(); refresh(); loadOrders(true);
@@ -1874,7 +1930,9 @@ function renderSync() {
 async function refresh(force) {                  // sau mỗi lần lưu: lấy lại tồn kho, giá mua, khách
   if (typeof ORD !== 'undefined' && S.tab === 'order') loadOrders(true);
   try {
-    const r = await api({ action: 'init' });
+    const light = MODE === 'banhang' && !force && S.data && S.data.buy && S.data.make;
+    const r = await api(light ? { action: 'init', light: true } : { action: 'init' });
+    if (light && r.ok && r.products) { r.buy = S.data.buy; r.make = S.data.make; r.health = S.data.health; }
     if (r.ok && r.buy && r.make) {
       accept(r);
       const a = document.activeElement;
@@ -2249,7 +2307,7 @@ const FB_FIXES = ['Đổi món', 'Hoàn tiền', 'Giảm giá đơn sau', 'Xin l
 const ORD_FILTERS = [
   ['new', 'Mới', o => o.status === 'Mới'],
   ['doing', 'Đang làm', o => o.status === 'Đã nhận' || o.status === 'Đang giao'],
-  ['money', 'Chờ tiền / ghi sổ', o => o.status === 'Đã giao' && (!o.sale || (o.bank && o.money !== 'Đã thanh toán'))],
+  ['money', 'Chờ tiền / ghi sổ', o => o.status === 'Đã giao' && (!o.sale || o.money !== 'Đã thanh toán')],
   ['recent', 'Gần đây', () => true]
 ];
 async function loadOrders(quiet) {
@@ -2287,7 +2345,7 @@ function renderOrders() {
   const shown = list.filter(ORD_FILTERS.find(x => x[0] === ORD.filter)[2]);
   if (ORD.list && !shown.length) kids.push(h('div', { class: 'blank' }, ORD.filter === 'new' ? 'Chưa có đơn mới.' : 'Không có đơn nào.'));
   shown.forEach(o => kids.push(orderCard(o)));
-  kids.push(h('div', { class: 'small', style: 'text-align:center;margin-top:16px;color:var(--muted);font-size:13px' }, ORD.at ? 'Cập nhật lúc ' + ordTime(ORD.at) + ', tự tải lại mỗi 10 giây' : ''));
+  kids.push(h('div', { class: 'small', style: 'text-align:center;margin-top:16px;color:var(--muted);font-size:13px' }, ORD.at ? 'Cập nhật lúc ' + ordTime(ORD.at) + ', tự tải lại mỗi 25 giây' : ''));
   box.replaceChildren(...kids);
   if (ORD.focus) { const el = document.getElementById('o-' + ORD.focus); if (el) el.scrollIntoView({ block: 'center' }); ORD.focus = null; }
 }
@@ -2304,7 +2362,7 @@ function orderCard(o) {
   if (o.status === 'Đã giao' && !o.sale) btns.push(btn('Ghi vào BÁN HÀNG', 'book', true));
   if (o.status === 'Đã giao' && unpaid) btns.push(btn('Đã nhận tiền', 'paid', !!o.sale));
   const showTick = unpaid && (o.status === 'Đã nhận' || o.status === 'Đang giao' || o.status === 'Mới');
-  const canPay = ['Mới', 'Đã nhận'].includes(o.status) && unpaid && !o.paid;
+  const canPay = ['Mới', 'Đã nhận', 'Đang giao', 'Đã giao'].includes(o.status) && unpaid && !o.paid;
   if (canPay) btns.push(btn(o.bank ? 'Đổi sang tiền mặt' : 'Đổi sang chuyển khoản', 'pay', false, { pay: o.bank ? 'cash' : 'bank' }));
   return h('div', { class: 'ocard ' + cls, id: 'o-' + o.code },
     h('div', { class: 'hd' }, h('b', {}, o.code), h('span', { class: pill }, o.status), o.src !== 'Khách đặt' && o.src ? h('span', { class: 'lbl' }, o.src) : '', open ? h('span', { class: 'due num' }, '⏰ ' + ordTime(o.deliverAt)) : ''),
@@ -2419,7 +2477,7 @@ async function ratingShowDo(x) {
   } catch (e) { delete FB.busy[x.code]; showMsg('err', 'Mất kết nối. Chưa gửi được, thử lại.'); renderOrders(); toTop(); }
 }
 // Tự tải lại đơn mỗi phút khi app đang mở; mở lại app cũng tải ngay.
-setInterval(() => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible' && (S.tab === 'order' || Date.now() - ORD.at > 55000)) loadOrders(true); }, 10000);
+setInterval(() => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible' && (S.tab === 'order' ? Date.now() - ORD.at > 25000 : Date.now() - ORD.at > 55000)) loadOrders(true); }, 10000);
 document.addEventListener('visibilitychange', () => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible' && Date.now() - ORD.at > 20000) loadOrders(true); });
 (() => { const q = new URLSearchParams(location.search).get('don'); if (q) { S.tab = 'order'; ORD.focus = q.toUpperCase(); history.replaceState(null, '', location.pathname); } })();
 
