@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sổ sâm">
+<meta name="apple-mobile-web-app-title" content="Sâmila">
 <meta name="theme-color" content="#1E4D3A">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-180.png">
-<title>Sổ sâm</title>
+<title>Sâmila</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -237,7 +237,7 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 .ocard .omoney .wait{color:var(--danger);font-weight:600}
 .ocard .omoney .paid{color:var(--green-2);font-weight:600}
 .ocard .tick{display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border-radius:10px;background:#FFF7DA;font-size:15px;font-weight:500}
-.ocard .tick input{width:22px;height:22px;accent-color:var(--green)}
+.ocard .tick input,#qBox .tick input{width:22px;height:22px;accent-color:var(--green)}
 .ocard .btns{display:flex;gap:8px;margin-top:10px}
 .ocard .btns button{flex:1;height:44px;border-radius:11px;font-weight:600;font-size:15px;border:1.5px solid var(--line);background:var(--paper)}
 .ocard .btns .pri{background:var(--green);border-color:var(--green);color:#fff}
@@ -305,6 +305,8 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 .obox .it span{flex:1;min-width:0}
 .obox .it small{display:block;color:var(--danger)}
 .obox .link{padding:4px 0}
+#qBox .tick{display:flex;align-items:center;gap:10px;font-size:15px}
+#qBox .search{margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -347,10 +349,12 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
         </div>
         <div class="picked" id="custPicked" hidden></div>
       </section>
-      <section><h2>Nơi bán</h2><div class="chips" id="places"></div><input class="search other" id="placeOther" placeholder="Tên nơi bán" hidden autocomplete="off"></section>
+      <section id="modeSec" hidden><h2>Kiểu bán</h2><div class="chips" id="modeChips"></div></section>
+      <section id="qSec" hidden><h2>Giao cho</h2><div id="qBox"></div></section>
+      <section id="placeSec"><h2>Nơi bán</h2><div class="chips" id="places"></div><input class="search other" id="placeOther" placeholder="Tên nơi bán" hidden autocomplete="off"></section>
       <section><h2>Món</h2><div id="products"></div></section>
       <section><h2>Phiếu</h2><div class="bill" id="bill"></div></section>
-      <section><h2>Thanh toán</h2><div class="chips" id="pays"></div></section>
+      <section id="paySec"><h2>Thanh toán</h2><div class="chips" id="pays"></div></section>
       <section class="recent" id="recentBox" hidden><h2>Đơn vừa lưu trên máy này</h2><ul id="recent"></ul></section>
     </div>
 
@@ -363,6 +367,7 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
       </section>
       <section>
         <h2>Mặt hàng</h2>
+        <div class="chips" id="buyRecent" style="margin-bottom:10px"></div>
         <div id="buyLines"></div>
         <input class="search" id="buySearch" type="search" placeholder="Gõ tên để thêm, ví dụ: mia, la dua" autocomplete="off" autocapitalize="off">
         <div class="results" id="buyResults" hidden></div>
@@ -399,6 +404,9 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
       </section>
     </div>
 
+    <!-- BCQT -->
+    <div id="tab-bcqt" hidden><div id="bcqtBox"></div></div>
+
     <!-- ĐƠN ONLINE -->
     <div id="tab-order" hidden><div id="ordBox"></div></div>
   </main>
@@ -417,6 +425,7 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
     <button data-tab="sale"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v4l2 3v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10l2-3z"/><path d="M7 13h10"/></svg>Bán</button>
     <button data-tab="buy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.5 12h-11z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>Mua</button>
     <button data-tab="make"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2 11h20M9 7c0-1.5 1.5-1.5 1.5-3M14 7c0-1.5 1.5-1.5 1.5-3"/></svg>Nấu</button>
+    <button data-tab="bcqt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 15l3-3 2 2 3-4"/></svg>BCQT</button>
     <button data-tab="cust"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Khách</button>
     <button data-tab="order"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Đơn<span class="badge" id="ordBadge" hidden></span></button>
   </div>
@@ -614,18 +623,20 @@ function suggestAmounts(make, cot, water) {
 }
 
 /* ================= Trạng thái ================= */
+const MODE = 'quanly';   // 'quanly' = Sâmila Quản lý, 'banhang' = Sâmila Bán hàng (bản dựng tự thay dòng này)
+const TABS = MODE === 'banhang' ? ['sale', 'order', 'cust'] : ['home', 'buy', 'make', 'bcqt'];
 const S = {
-  cfg: store.get('sam.cfg', null), data: null, tab: 'sale',
+  cfg: store.get('sam.cfg', null), data: null, tab: TABS[0],
   at: null, saving: false, requestId: null,
   view: { sale: 'new', buy: 'new', make: 'new' }, edit: null, ledger: {}, confirm: null,
   report: {}, period: null, day: null, syncAt: 0,
-  sale: { cust: null, place: null, other: false, pay: null, qty: {}, giftOpen: {}, paid: null },
+  sale: { cust: null, place: null, other: false, pay: null, qty: {}, giftOpen: {}, paid: null, mode: 'direct', q: { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false } },
   buy: { place: null, other: false, pay: null, lines: [] },
   make: { cot: null, water: '', out: '', amounts: {}, touched: {}, all: false },
   cust: { q: '', edit: null, group: '', other: false, del: false }
 };
 const isDemo = () => S.cfg && S.cfg.url === 'demo';
-const TITLES = { home: 'Tổng quan', sale: 'Bán hàng', buy: 'Mua hàng', make: 'Nấu sâm', cust: 'Khách hàng', order: 'Đơn online' };
+const TITLES = { home: 'Tổng quan', sale: 'Bán hàng', buy: 'Mua hàng', make: 'Nấu sâm', cust: 'Khách hàng', order: 'Đơn hàng', bcqt: 'Báo cáo quản trị' };
 
 /* ================= Gọi web app ================= */
 async function api(body) {
@@ -686,12 +697,15 @@ async function demoApi(b) {
     return { ok: true, report: x, synced: x.sale ? 1 : 0 };
   }
   if (b.action === 'ratingShow') { DEMO_FB.ratings.find(r => r.code === b.code).show = b.show; return { ok: true }; }
+  if (b.action === 'orderCreate') { const o = { code: 'SML' + Math.floor(10000 + Math.random() * 89999), at: Date.now(), status: 'Đã nhận', phone: b.phone, name: b.name, area: 'Bên ngoài', cc: b.area === 'cc', place: b.apt || b.addr, deliverAt: Date.now(), asap: true, lines: b.items, total: 0, bank: b.pay === 'bank', money: b.paid ? 'Đã thanh toán' : 'Trả khi nhận hàng', note: '', zalo: false, sale: '', paid: 0, src: 'Tiệm lên đơn' }; DEMO_ORDERS.unshift(o); return { ok: true, order: o }; }
+  if (b.action === 'bcqt') return { ok: true, rows: DEMO_BCQT };
   if (b.action === 'orders') return { ok: true, orders: JSON.parse(JSON.stringify(DEMO_ORDERS)) };
   if (b.action === 'orderAct') {
     const o = DEMO_ORDERS.find(x => x.code === b.code);
     const next = { accept: 'Đã nhận', reject: 'Từ chối', ship: 'Đang giao', done: 'Đã giao' }[b.act];
     if (next) o.status = next;
-    if (o.bank && (b.paid || b.act === 'paid')) o.money = 'Đã thanh toán';
+    if (b.paid || b.act === 'paid') o.money = 'Đã thanh toán';
+    if (b.act === 'pay') { o.bank = b.pay === 'bank'; o.money = o.bank ? 'Chưa thanh toán' : 'Trả khi nhận hàng'; }
     if ((b.act === 'done' || b.act === 'book') && !o.sale) o.sale = 'BH-DEMO/' + o.code;
     return { ok: true, order: o, sale: o.sale };
   }
@@ -752,7 +766,8 @@ async function load() {
 }
 function ready() {
   $('loading').hidden = true; $('main').hidden = false; $('nav').hidden = false; renderOutbox();
-  if (!ORD.at) loadOrders(true);
+  initNav();
+  if (MODE === 'banhang' && !ORD.at) loadOrders(true);
   const d = S.data, pick = (v, list, saved) => list.includes(v) ? v : list.includes(saved) ? saved : list[0];
   if (!S.sale.other) S.sale.place = pick(S.sale.place, d.places, store.get('sam.place', null));
   S.sale.pay = pick(S.sale.pay, d.pays);
@@ -760,6 +775,15 @@ function ready() {
   if (!S.buy.other) S.buy.place = pick(S.buy.place, d.buy.places, store.get('sam.buyPlace', null)) || null;
   if (S.make.cot && !d.make.cots.includes(S.make.cot)) S.make.cot = null;
   renderAll();
+}
+function initNav() {
+  const bs = [...document.querySelectorAll('.nav button')];
+  bs.forEach(b => { if (!TABS.includes(b.dataset.tab)) b.style.display = 'none'; });
+  const nav = document.querySelector('.nav .in');
+  TABS.forEach(t => { const b = bs.find(x => x.dataset.tab === t); if (b) nav.append(b); });
+  document.querySelector('.nav .in').style.gridTemplateColumns = 'repeat(' + TABS.length + ',1fr)';
+  if (!TABS.includes(S.tab)) S.tab = TABS[0];
+  document.title = MODE === 'banhang' ? 'Sâmila Bán hàng' : 'Sâmila Quản lý';
 }
 function renderAll() {
   if (!S.data) return;
@@ -773,7 +797,7 @@ function renderAll() {
   document.querySelectorAll('.nav button').forEach(b => b.dataset.tab === S.tab ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
   $('title').textContent = TITLES[S.tab];
   $('whenBtn').hidden = !entry || list; if (!entry || list) $('whenBox').hidden = true;
-  if (list) renderLedger(); else ({ home: renderHome, sale: renderSale, buy: renderBuy, make: renderMake, cust: renderCustList, order: renderOrders })[S.tab]();
+  if (list) renderLedger(); else ({ home: renderHome, sale: renderSale, buy: renderBuy, make: renderMake, cust: renderCustList, order: renderOrders, bcqt: renderBcqt })[S.tab]();
   renderBar();
 }
 function showMsg(kind, ...kids) {
@@ -787,7 +811,7 @@ function barState() {
   const lab = t => (editing() ? 'Lưu thay đổi' : t);
   if (S.tab === 'sale') {
     const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
-    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(o.total), label: lab('Lưu đơn'), ok: o.count > 0 };
+    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(o.total), label: lab(S.sale.mode === 'queue' ? 'Lên đơn giao' : 'Lưu đơn'), ok: o.count > 0 };
   }
   if (S.tab === 'buy') {
     const n = S.buy.lines.length, total = S.buy.lines.reduce((s, l) => s + (pmoney(l.cost) || 0), 0);
@@ -809,7 +833,7 @@ function renderBar() {
 }
 // Gửi một lần lưu. Mất mạng khi nhập mới thì giữ lại trên máy và tự gửi sau; requestId chống ghi trùng.
 const RESET = {
-  sale: () => Object.assign(S.sale, { qty: {}, giftOpen: {}, cust: null, paid: null }),
+  sale: () => Object.assign(S.sale, { qty: {}, giftOpen: {}, cust: null, paid: null, q: { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false } }),
   buy: () => { S.buy.lines = []; },
   make: () => Object.assign(S.make, { cot: null, water: '', out: '', amounts: {}, touched: {}, all: false })
 };
@@ -838,7 +862,27 @@ async function send(body, label, onOk) {
 $('saveBtn').addEventListener('click', () => ({ sale: saveSale, buy: saveBuy, make: saveMake })[S.tab]());
 
 /* ================= BÁN ================= */
-function renderSale() { renderSaleCust(); renderSaleChips(); renderProducts(); renderBill(); renderRecent(); }
+function renderSale() { renderSaleMode(); renderSaleCust(); renderSaleChips(); renderProducts(); renderBill(); renderRecent(); }
+function renderSaleMode() {
+  const m = S.sale.mode, q = S.sale.q, queue = m === 'queue' && !editing();
+  $('modeSec').hidden = MODE !== 'banhang' || !!editing();
+  $('modeChips').replaceChildren(chip('Bán ngay, ghi sổ luôn', m === 'direct', () => { S.sale.mode = 'direct'; renderSale(); renderBar(); }),
+    chip('Lên đơn giao, vào hàng chờ', m === 'queue', () => { S.sale.mode = 'queue'; fillQ(S.sale.cust); renderSale(); renderBar(); }));
+  $('qSec').hidden = !queue; $('placeSec').hidden = queue; $('paySec').hidden = queue;
+  if (!queue) return;
+  const inp = (k, ph, mode) => h('input', { class: 'search', placeholder: ph, value: q[k], inputmode: mode || 'text', autocomplete: 'off', oninput: e => { q[k] = e.target.value; } });
+  $('qBox').replaceChildren(
+    inp('name', 'Tên khách'), inp('phone', 'Số điện thoại (có thì ghi, để khách thành thành viên sau)', 'tel'),
+    h('div', { class: 'chips', style: 'margin:10px 0' }, chip((S.data.building || 'Chung cư'), q.area === 'cc', () => { q.area = 'cc'; renderSaleMode(); }), chip('Bên ngoài', q.area === 'out', () => { q.area = 'out'; renderSaleMode(); })),
+    inp('place', q.area === 'cc' ? 'Số căn hộ, ví dụ A0605' : 'Địa chỉ giao hàng'),
+    h('div', { class: 'chips', style: 'margin:10px 0' }, chip('Tiền mặt', q.pay === 'cash', () => { q.pay = 'cash'; renderSaleMode(); }), chip('Chuyển khoản', q.pay === 'bank', () => { q.pay = 'bank'; renderSaleMode(); })),
+    h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: q.paid, onchange: e => { q.paid = e.target.checked; } }), 'Khách đã trả tiền rồi'));
+}
+function fillQ(c) {
+  const q = S.sale.q;
+  if (!c || c.code === UNKNOWN) return;
+  q.name = c.name; if (c.apt) { q.area = 'cc'; q.place = c.apt; }
+}
 function renderSaleCust() {
   const c = S.sale.cust, picked = $('custPicked');
   picked.hidden = !c; $('custPick').hidden = !!c; picked.replaceChildren();
@@ -856,7 +900,7 @@ $('custSearch').addEventListener('input', e => {
     ? hits.map(c => h('button', { onclick: () => pickCust(c) }, h('span', {}, c.name), h('span', { class: 'apt num' }, c.apt || c.group)))
     : [h('div', { class: 'none' }, 'Không thấy khách này. Thêm ở mục Khách rồi quay lại.')]));
 });
-function pickCust(c) { S.sale.cust = c; $('custSearch').value = ''; $('custResults').hidden = true; renderSaleCust(); }
+function pickCust(c) { S.sale.cust = c; $('custSearch').value = ''; $('custResults').hidden = true; fillQ(c); renderSaleCust(); if (S.sale.mode === 'queue') renderSaleMode(); }
 $('custUnknown').addEventListener('click', () => {
   const c = S.data.customers.find(c => c.code === UNKNOWN);
   if (c) pickCust(c); else showMsg('err', 'Sheet KHACH_HANG chưa có dòng "Không xác định".');
@@ -939,6 +983,19 @@ function renderRecent() {
 function saveSale() {
   const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
   if (!o.count) return;
+  if (S.sale.mode === 'queue' && !editing()) {
+    const q = S.sale.q, lines = o.lines.filter(l => l.group !== 'CHO TẶNG');
+    if (!lines.length) { showMsg('err', 'Đơn giao không có món tặng riêng. Chọn món bán.'); toTop(); return; }
+    if (!q.place.trim()) { showMsg('err', q.area === 'cc' ? 'Chưa nhập số căn hộ.' : 'Chưa nhập địa chỉ giao.'); toTop(); return; }
+    send({ action: 'orderCreate', items: lines.map(l => ({ name: l.name, qty: l.qty })), name: q.name.trim(), phone: q.phone.trim(), area: q.area,
+      apt: q.area === 'cc' ? q.place.trim() : '', addr: q.area === 'out' ? q.place.trim() : '', pay: q.pay, paid: q.paid },
+      'Đơn giao ' + o.count + ' chai', r => {
+        showMsg('ok', 'Đã lên đơn ', h('b', {}, r.order ? r.order.code : ''), ' vào hàng chờ. Xem ở mục Đơn.');
+        if (r.order && ORD.list) ORD.list.unshift(r.order);
+        loadOrders(true);
+      });
+    return;
+  }
   if (!S.sale.cust) { showMsg('err', 'Chưa chọn khách. Chọn khách, hoặc bấm "Khách lẻ, không rõ tên".'); toTop(); $('custSearch').focus(); return; }
   const place = (S.sale.place || '').trim();
   if (!place) { showMsg('err', 'Chưa nhập nơi bán.'); toTop(); return; }
@@ -957,6 +1014,31 @@ function saveSale() {
   });
 }
 
+/* ================= BCQT ================= */
+let BC = { rows: null, error: null, busy: false };
+async function loadBcqt() {
+  if (BC.busy) return; BC.busy = true;
+  try { const r = await api({ action: 'bcqt' }); if (r.ok) { BC.rows = r.rows; BC.error = null; } else BC.error = r.error === 'UNKNOWN_ACTION' ? ERR.UNKNOWN_ACTION() : (r.error === 'NO_SHEET' ? 'Chưa có sheet BÁO CÁO QUẢN TRỊ.' : errText(r)); }
+  catch (e) { BC.error = 'Không tải được báo cáo. Kiểm tra mạng rồi thử lại.'; }
+  BC.busy = false; if (S.tab === 'bcqt') renderBcqt();
+}
+function renderBcqt() {
+  const box = $('bcqtBox'), R = BC.rows;
+  if (!R && !BC.error) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tải báo cáo…')); loadBcqt(); return; }
+  if (BC.error) { box.replaceChildren(h('div', { class: 'note err', role: 'alert' }, BC.error), h('button', { class: 'link', onclick: () => { BC.error = null; BC.rows = null; renderBcqt(); } }, 'Thử lại')); return; }
+  const g = (i, c) => ((R[i] || [])[c] || '');
+  const kpi = [0, 2, 4, 6].map(c => h('div', { class: 'card', style: 'padding:12px 14px' }, h('small', { style: 'color:var(--muted)' }, g(2, c)), h('b', { class: 'num', style: 'display:block;font-size:20px;margin:2px 0' }, g(3, c)), h('small', { style: 'color:var(--muted)' }, g(4, c))));
+  const cols = [0, 1, 3, 5];
+  const rowEl = (i, head) => h('tr', {}, cols.map(c => h(head ? 'th' : 'td', { style: 'padding:6px 4px;text-align:' + (c ? 'right' : 'left') + (/LÃI/.test(g(i, 0)) ? ';font-weight:700' : '') }, g(i, c))));
+  const body = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].filter(i => g(i, 0)).map(i => rowEl(i));
+  box.replaceChildren(
+    h('p', { class: 'small', style: 'margin:0 0 10px;color:var(--muted)' }, g(0, 0).replace(':', '') + ': ' + g(0, 1) + '. Đổi tháng ở ô vàng trong sheet BÁO CÁO QUẢN TRỊ.'),
+    h('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' }, kpi),
+    h('table', { style: 'width:100%;border-collapse:collapse;margin-top:14px;font-size:14px' }, h('thead', {}, rowEl(7, true)), h('tbody', {}, body)),
+    g(22, 0) ? h('p', { class: 'small', style: 'color:var(--muted);margin-top:12px' }, g(22, 0)) : '',
+    h('button', { class: 'link', style: 'margin-top:10px', onclick: () => { BC.rows = null; renderBcqt(); } }, 'Tải lại'));
+}
+
 /* ================= MUA ================= */
 function renderBuy() {
   const b = S.buy, d = S.data.buy;
@@ -965,6 +1047,9 @@ function renderBuy() {
     chip('Nơi khác', b.other, () => { b.other = true; b.place = ''; renderBuy(); $('buyPlaceOther').focus(); }));
   $('buyPlaceOther').hidden = !b.other; if (b.other) $('buyPlaceOther').value = b.place || '';
   $('buyPays').replaceChildren(...d.pays.map(p => chip(p, p === b.pay, () => { b.pay = p; renderBuy(); })));
+  const rec = (d.recent || d.items.slice(0, 8).map(i => i.name)).map(n => d.items.find(i => i.name === n)).filter(i => i && !b.lines.some(l => l.name === i.name));
+  $('buyRecent').hidden = !rec.length || !!editing();
+  $('buyRecent').replaceChildren(...rec.map(i => h('button', { class: 'chip', onclick: () => addBuy(i) }, '+ ' + i.name)));
   $('buyLines').replaceChildren(...b.lines.map(buyLine));
   $('buySearch').hidden = !!editing();                // sửa thì chỉ sửa đúng một dòng
 }
@@ -1544,6 +1629,7 @@ $('whenInput').addEventListener('change', e => { let v = e.target.value; if (v &
 $('whenNow').addEventListener('click', () => setWhen(null));
 
 /* ================= Đơn online ================= */
+const DEMO_BCQT = [['Chọn tháng xem báo cáo (ô vàng):', '11/2026', '', '', '', '', ''], [], ['DOANH THU', '', 'LÃI GỘP', '', 'LÃI THUẦN', '', 'CP CHẤT LƯỢNG / DOANH THU'], ['532.000 đ', '', '458.676 đ', '', '458.676 đ', '', '0,0%'], ['Chưa có tháng trước', '', 'Chưa có tháng trước', '', 'Chưa có tháng trước', '', 'Tháng trước: 0,0%'], [], ['SO SÁNH'], ['CHỈ TIÊU', 'Tháng 11/2026', '% DOANH THU', 'Tháng 10/2026', '% DOANH THU', 'CHÊNH LỆCH', 'CHÊNH LỆCH %'], ['Doanh thu', '532.000', '100,0%', '0', '', '532.000', ''], ['Giá vốn: nguyên liệu đã dùng', '73.324', '13,8%', '0', '', '73.324', ''], ['LÃI GỘP', '458.676', '86,2%', '0', '', '458.676', ''], ['LÃI THUẦN', '458.676', '86,2%', '0', '', '458.676', ''], [], ['Số chai bán', '23', '', '0', '', '23', ''], ['Lãi thuần mỗi chai', '19.942', '', '', '', '19.942', ''], [], [], [], [], [], [], [], ['Lưu ý: giá vốn tạm tính theo nguyên liệu đã dùng nấu.']];
 const DEMO_ORDERS = (() => {
   const t = Date.now(), L = (n, q) => ({ name: n, qty: q });
   return [
@@ -1616,7 +1702,7 @@ function orderCard(o) {
   const cls = { 'Mới': 's-new', 'Đã nhận': 's-ok', 'Đang giao': 's-ship' }[o.status] || '';
   const pill = o.status === 'Mới' ? 'pill new' : (o.status === 'Huỷ' || o.status === 'Từ chối') ? 'pill no' : 'pill';
   const busy = ORD.busy[o.code], open = ['Mới', 'Đã nhận', 'Đang giao'].includes(o.status);
-  const unpaid = o.bank && o.money !== 'Đã thanh toán';
+  const unpaid = o.money !== 'Đã thanh toán';
   const btn = (label, act, pri, extra) => h('button', { class: pri ? 'pri' : act === 'reject' ? 'no' : '', disabled: !!busy, onclick: () => orderDo(o, act, extra) }, busy === act ? 'Đang gửi…' : label);
   const btns = [];
   if (o.status === 'Mới') btns.push(btn('Nhận đơn', 'accept', true), btn('Từ chối', 'reject'));
@@ -1625,32 +1711,34 @@ function orderCard(o) {
   if (o.status === 'Đã giao' && !o.sale) btns.push(btn('Ghi vào BÁN HÀNG', 'book', true));
   if (o.status === 'Đã giao' && unpaid) btns.push(btn('Đã nhận tiền', 'paid', !!o.sale));
   const showTick = unpaid && (o.status === 'Đã nhận' || o.status === 'Đang giao' || o.status === 'Mới');
+  const canPay = ['Mới', 'Đã nhận'].includes(o.status) && unpaid && !o.paid;
+  if (canPay) btns.push(btn(o.bank ? 'Đổi sang tiền mặt' : 'Đổi sang chuyển khoản', 'pay', false, { pay: o.bank ? 'cash' : 'bank' }));
   return h('div', { class: 'ocard ' + cls, id: 'o-' + o.code },
-    h('div', { class: 'hd' }, h('b', {}, o.code), h('span', { class: pill }, o.status), open ? h('span', { class: 'due num' }, '⏰ ' + ordTime(o.deliverAt)) : ''),
-    h('div', { class: 'who' }, (o.name || 'Khách chưa ghi tên') + ' · ', h('a', { href: 'tel:' + o.phone }, o.phone), o.zalo ? ' · Zalo' : ''),
+    h('div', { class: 'hd' }, h('b', {}, o.code), h('span', { class: pill }, o.status), o.src === 'Tiệm lên đơn' ? h('span', { class: 'lbl' }, 'Tiệm lên đơn') : '', open ? h('span', { class: 'due num' }, '⏰ ' + ordTime(o.deliverAt)) : ''),
+    h('div', { class: 'who' }, (o.name || 'Khách chưa ghi tên') + ' · ', h('a', { href: 'tel:' + o.phone }, o.phone), ''),
     h('div', { class: 'where' }, o.cc ? o.area + ', căn ' + o.place : o.place),
     h('ul', {}, o.lines.map(l => h('li', {}, l.qty + '× ' + lineName({ name: l.name, group: 'BÁN HÀNG' })))),
     o.note ? h('div', { class: 'memo' }, '“' + o.note + '”') : '',
-    h('div', { class: 'omoney' }, h('span', { class: o.bank ? (unpaid ? 'wait' : 'paid') : '' }, o.bank ? 'Chuyển khoản · ' + o.money.toLowerCase() : 'Tiền mặt khi nhận'), h('b', { class: 'num' }, vnd(o.total))),
-    showTick ? h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: !!ORD.paid[o.code], onchange: e => { ORD.paid[o.code] = e.target.checked; } }), 'Đã nhận tiền chuyển khoản') : '',
+    h('div', { class: 'omoney' }, h('span', { class: unpaid ? 'wait' : 'paid' }, (o.bank ? 'Chuyển khoản' : 'Tiền mặt') + ' · ' + (unpaid ? (o.money || 'chưa thu').toLowerCase() : 'đã thu')), h('b', { class: 'num' }, vnd(o.total))),
+    showTick ? h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: !!ORD.paid[o.code], onchange: e => { ORD.paid[o.code] = e.target.checked; } }), 'Đã nhận đủ tiền') : '',
     o.status === 'Đã giao' && o.sale ? h('div', { class: 'meta num', style: 'margin-top:6px;font-size:13px;color:var(--muted)' }, 'Đã ghi sổ: ' + o.sale) : '',
     o.status === 'Đã giao' && !o.sale ? h('div', { class: 'warn' }, 'Đã giao nhưng chưa ghi vào BÁN HÀNG.') : '',
     btns.length ? h('div', { class: 'btns' }, btns) : '');
 }
-async function orderDo(o, act) {
+async function orderDo(o, act, extra) {
   let reason = '';
   if (act === 'reject') {
-    reason = prompt('Lý do từ chối (khách sẽ thấy qua Zalo). Ví dụ: Hết hàng, ngoài khu vực giao:', 'Hết hàng');
+    reason = prompt('Lý do từ chối (khách sẽ thấy trên trang theo dõi đơn). Ví dụ: Hết hàng, ngoài khu vực giao:', 'Hết hàng');
     if (reason === null) return;
   }
   ORD.busy[o.code] = act; showMsg(null); renderOrders();
   try {
-    const r = await api({ action: 'orderAct', requestId: uid(), code: o.code, act, paid: !!ORD.paid[o.code], reason });
+    const r = await api({ action: 'orderAct', requestId: uid(), code: o.code, act, paid: !!ORD.paid[o.code], reason, pay: extra && extra.pay });
     delete ORD.busy[o.code];
     if (!r.ok) { showMsg('err', errText(r)); await loadOrders(); toTop(); return; }
-    const done = { accept: 'Đã nhận đơn', reject: 'Đã từ chối đơn', ship: 'Đã chuyển sang đang giao', done: 'Đã giao xong', paid: 'Đã ghi nhận tiền', book: 'Đã ghi vào BÁN HÀNG' }[act];
+    const done = { accept: 'Đã nhận đơn', reject: 'Đã từ chối đơn', ship: 'Đã chuyển sang đang giao', done: 'Đã giao xong', paid: 'Đã ghi nhận tiền', pay: 'Đã đổi cách thanh toán', book: 'Đã ghi vào BÁN HÀNG' }[act];
     if (r.bookError) showMsg('err', 'Đơn ', h('b', {}, o.code), ' đã giao nhưng CHƯA ghi được vào BÁN HÀNG: ', errText({ error: r.bookError, name: r.bookName }), ' Bấm "Ghi vào BÁN HÀNG" ở thẻ đơn để thử lại.');
-    else showMsg('ok', done + ' ', h('b', {}, o.code), r.sale ? ', mã bán hàng ' + r.sale : '', r.order && r.order.zalo && act !== 'book' ? '. Đã nhắn khách qua Zalo.' : '.');
+    else showMsg('ok', done + ' ', h('b', {}, o.code), r.sale ? ', mã bán hàng ' + r.sale : '', '.');
     if (r.sale || r.salePaid) { dirty(); refresh(); }
     await loadOrders(); toTop();
   } catch (e) { delete ORD.busy[o.code]; showMsg('err', 'Mất kết nối. Chưa gửi được, thử lại.'); renderOrders(); toTop(); }
@@ -1737,8 +1825,8 @@ async function ratingShowDo(x) {
   } catch (e) { delete FB.busy[x.code]; showMsg('err', 'Mất kết nối. Chưa gửi được, thử lại.'); renderOrders(); toTop(); }
 }
 // Tự tải lại đơn mỗi phút khi app đang mở; mở lại app cũng tải ngay.
-setInterval(() => { if (S.data && document.visibilityState === 'visible') loadOrders(true); }, 60000);
-document.addEventListener('visibilitychange', () => { if (S.data && document.visibilityState === 'visible' && Date.now() - ORD.at > 20000) loadOrders(true); });
+setInterval(() => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible') loadOrders(true); }, 60000);
+document.addEventListener('visibilitychange', () => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible' && Date.now() - ORD.at > 20000) loadOrders(true); });
 (() => { const q = new URLSearchParams(location.search).get('don'); if (q) { S.tab = 'order'; ORD.focus = q.toUpperCase(); history.replaceState(null, '', location.pathname); } })();
 
 /* ================= Chuyển mục, cài đặt ================= */
