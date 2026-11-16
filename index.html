@@ -79,6 +79,15 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 .gift{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .gift .lbl{font-size:14px;color:var(--muted)}
 .gift .stepper button{width:38px;height:38px;font-size:20px}
+.posbox .pcard{background:var(--paper);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;font-size:15px}
+.posbox .promos{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.posbox .promos span{background:#FFF4CC;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600}
+.posbox .sum{margin-top:10px;padding:12px;border-radius:12px;background:var(--leaf);font-size:14.5px}
+.posbox .acts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.posbox .acts button.pri{height:52px;border-radius:12px;background:var(--green);color:#fff;font-weight:700;font-size:17px}
+.posbox .acts button.pri:disabled{opacity:.5}
+.posbox .acts button.sec{height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);font-weight:600}
+.posbox .fld{display:grid;grid-template-columns:1fr 130px;gap:8px;margin-top:8px}
 .gift-toggle{grid-column:1/-1;justify-self:start;font-size:14px;color:var(--green-2);font-weight:600;padding:4px 0}
 
 /* Phiếu */
@@ -244,6 +253,26 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 .ocard .btns .no{flex:0 0 auto;padding:0 14px;color:var(--danger)}
 .ocard .btns button:disabled{opacity:.55}
 .ocard .warn{margin-top:8px;font-size:14px;color:var(--danger);font-weight:500}
+.ocard .promo{margin-top:6px;font-size:13.5px;color:var(--green-2);font-weight:500}
+.mkc{background:var(--paper);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;border-left:4px solid var(--green-2)}
+.mkc.off{opacity:.62;border-left-color:var(--line)}
+.mkc b{font-size:16px}.mkc .t{margin-top:4px;font-size:15px}
+.mkc .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mkc .tags span{font-size:12.5px;padding:2px 9px;border-radius:999px;background:var(--leaf);color:var(--green)}
+.mkc .tags .st{background:#eee;color:var(--muted)}
+.mkc .acts{display:flex;gap:8px;margin-top:10px}
+.mkc .acts button{flex:1;height:40px;border-radius:10px;font-weight:600;font-size:14.5px;border:1.5px solid var(--line);background:var(--paper)}
+.mkc .acts .no{flex:0 0 auto;padding:0 14px;color:var(--danger)}
+.mkform .mklab{display:block;font-weight:600;margin:14px 0 6px}
+.mkform select.search{appearance:auto}
+.mkform .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mkform .hint{font-size:13px;color:var(--muted);margin-top:4px}
+.mkform .go{width:100%;height:50px;margin-top:20px;border-radius:12px;background:var(--green);color:#fff;font-weight:700;font-size:17px}
+.mkform .go:disabled{opacity:.55}
+#qBox .qx{margin-top:12px;padding:12px;border-radius:12px;background:var(--leaf);font-size:14.5px}
+#qBox .qx b{font-weight:600}
+#qBox .qx .chips{margin:8px 0 0}
+#qBox .qx .tick{margin-top:8px;background:transparent;padding:0}
 .ocard.s-err{border-left-color:var(--danger)}
 .ocard.s-done{border-left-color:var(--green-2)}
 .ocard .stars{font-size:21px;letter-spacing:2px;color:#D99A00;line-height:1}
@@ -340,6 +369,8 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 
     <!-- BÁN -->
     <div id="tab-sale">
+      <div id="posBox"></div>
+      <div id="legacySale">
       <section>
         <h2>Khách</h2>
         <div id="custPick">
@@ -356,6 +387,7 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
       <section><h2>Phiếu</h2><div class="bill" id="bill"></div></section>
       <section id="paySec"><h2>Thanh toán</h2><div class="chips" id="pays"></div></section>
       <section class="recent" id="recentBox" hidden><h2>Đơn vừa lưu trên máy này</h2><ul id="recent"></ul></section>
+      </div>
     </div>
 
     <!-- MUA -->
@@ -409,6 +441,9 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 
     <!-- ĐƠN ONLINE -->
     <div id="tab-order" hidden><div id="ordBox"></div></div>
+
+    <!-- KHUYẾN MÃI -->
+    <div id="tab-mkt" hidden><div id="mktBox"></div></div>
   </main>
 </div>
 
@@ -427,6 +462,7 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
     <button data-tab="make"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2 11h20M9 7c0-1.5 1.5-1.5 1.5-3M14 7c0-1.5 1.5-1.5 1.5-3"/></svg>Nấu</button>
     <button data-tab="bcqt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 15l3-3 2 2 3-4"/></svg>BCQT</button>
     <button data-tab="cust"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Khách</button>
+    <button data-tab="mkt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/></svg>Khuyến mãi</button>
     <button data-tab="order"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Đơn<span class="badge" id="ordBadge" hidden></span></button>
   </div>
 </nav>
@@ -624,19 +660,19 @@ function suggestAmounts(make, cot, water) {
 
 /* ================= Trạng thái ================= */
 const MODE = 'quanly';   // 'quanly' = Sâmila Quản lý, 'banhang' = Sâmila Bán hàng (bản dựng tự thay dòng này)
-const TABS = MODE === 'banhang' ? ['sale', 'order', 'cust'] : ['home', 'buy', 'make', 'bcqt'];
+const TABS = MODE === 'banhang' ? ['sale', 'order', 'mkt', 'cust'] : ['home', 'buy', 'make', 'bcqt', 'mkt'];
 const S = {
   cfg: store.get('sam.cfg', null), data: null, tab: TABS[0],
   at: null, saving: false, requestId: null,
   view: { sale: 'new', buy: 'new', make: 'new' }, edit: null, ledger: {}, confirm: null,
   report: {}, period: null, day: null, syncAt: 0,
-  sale: { cust: null, place: null, other: false, pay: null, qty: {}, giftOpen: {}, paid: null, mode: 'direct', q: { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false } },
+  sale: { pos: { step: 'menu' }, cust: null, place: null, other: false, pay: null, qty: {}, giftOpen: {}, paid: null, mode: 'direct', q: { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false } },
   buy: { place: null, other: false, pay: null, lines: [] },
   make: { cot: null, water: '', out: '', amounts: {}, touched: {}, all: false },
   cust: { q: '', edit: null, group: '', other: false, del: false }
 };
 const isDemo = () => S.cfg && S.cfg.url === 'demo';
-const TITLES = { home: 'Tổng quan', sale: 'Bán hàng', buy: 'Mua hàng', make: 'Nấu sâm', cust: 'Khách hàng', order: 'Đơn hàng', bcqt: 'Báo cáo quản trị' };
+const TITLES = { home: 'Tổng quan', sale: 'Bán hàng', buy: 'Mua hàng', make: 'Nấu sâm', cust: 'Khách hàng', order: 'Đơn hàng', bcqt: 'Báo cáo quản trị', mkt: 'Khuyến mãi' };
 
 /* ================= Gọi web app ================= */
 async function api(body) {
@@ -697,8 +733,32 @@ async function demoApi(b) {
     return { ok: true, report: x, synced: x.sale ? 1 : 0 };
   }
   if (b.action === 'ratingShow') { DEMO_FB.ratings.find(r => r.code === b.code).show = b.show; return { ok: true }; }
-  if (b.action === 'orderCreate') { const o = { code: 'SML' + Math.floor(10000 + Math.random() * 89999), at: Date.now(), status: 'Đã nhận', phone: b.phone, name: b.name, area: 'Bên ngoài', cc: b.area === 'cc', place: b.apt || b.addr, deliverAt: Date.now(), asap: true, lines: b.items, total: 0, bank: b.pay === 'bank', money: b.paid ? 'Đã thanh toán' : 'Trả khi nhận hàng', note: '', zalo: false, sale: '', paid: 0, src: 'Tiệm lên đơn' }; DEMO_ORDERS.unshift(o); return { ok: true, order: o }; }
+  if (b.action === 'orderAttach') {
+    const o = DEMO_ORDERS.find(x => x.code === b.code);
+    o.phone = b.phone; if (b.name) o.name = b.name;
+    if (b.register) DEMO_MEMBERS[b.phone] = { name: b.name };
+    const qty = {}; o.lines.filter(l => !l.gift).forEach(l => { qty[l.name] = { sell: l.qty, gift: 0 }; });
+    const c = calcOrder(DEMO.products, DEMO.tiers, qty), mem = DEMO_MEMBERS[b.phone] || b.phone === '0900000000';
+    const v = b.voucher ? 5000 : 0, la = b.useLa ? 12000 : 0, dis = mem ? Math.round(c.total * 0.1) : 0;
+    o.discount = c.discount + dis + v; o.la = la; o.total = Math.max(0, c.total - dis - v - la); o.promo = mem ? 'Thành viên giảm 10%' : '';
+    return { ok: true, order: o, granted: b.register ? ['Chào mừng'] : [] };
+  }
+  if (b.action === 'orderCreate') { const qty0 = {}; b.items.forEach(i => { qty0[i.name] = { sell: i.qty, gift: 0 }; }); const c0 = calcOrder(DEMO.products, DEMO.tiers, qty0); const o = { code: 'SML' + Math.floor(10000 + Math.random() * 89999), at: Date.now(), status: 'Đã nhận', phone: b.phone, name: b.name, area: 'Bên ngoài', cc: b.area === 'cc', place: b.apt || b.addr, deliverAt: Date.now(), asap: true, lines: b.items, gross: c0.total + c0.discount, discount: c0.discount, la: 0, promo: '', total: c0.total, bank: b.pay === 'bank', money: b.paid ? 'Đã thanh toán' : 'Trả khi nhận hàng', note: '', zalo: false, sale: '', paid: 0, src: b.src || 'Tiệm lên đơn' }; DEMO_ORDERS.unshift(o); return { ok: true, order: o }; }
   if (b.action === 'bcqt') return { ok: true, rows: DEMO_BCQT };
+  if (b.action === 'marketing') return { ok: true, products: DEMO.products.map(x => x.name), rows: JSON.parse(JSON.stringify(DEMO_MK)) };
+  if (b.action === 'marketingSave') {
+    const p = Object.assign({}, b.p), i = DEMO_MK.findIndex(x => x.row === p.row && p.row);
+    p.state = p.on === false ? 'Đang tắt' : ''; p.text = p.desc || (p.kind === 'Tặng món' ? 'Tặng ' + p.giftQty + ' ' + p.val : p.kind === 'Giảm giá' ? 'Giảm ' + p.val : p.kind === 'Voucher' ? 'Voucher giảm ' + p.val : 'Miễn phí giao hàng');
+    if (i >= 0) DEMO_MK[i] = p; else { p.row = DEMO_MK.length + 2; p.id = 'KM0' + (DEMO_MK.length + 1); DEMO_MK.push(p); }
+    return { ok: true, products: DEMO.products.map(x => x.name), rows: JSON.parse(JSON.stringify(DEMO_MK)) };
+  }
+  if (b.action === 'marketingDel') { const i = DEMO_MK.findIndex(x => x.row === b.row); if (i >= 0) DEMO_MK.splice(i, 1); return { ok: true, products: [], rows: JSON.parse(JSON.stringify(DEMO_MK)) }; }
+  if (b.action === 'custInfo') return DEMO_MEMBERS[b.phone] ? { ok: true, found: true, member: true, name: DEMO_MEMBERS[b.phone].name, la: 0, laStep: 5000, vouchers: [{ id: 'KM02', name: 'Chào mừng', text: 'Giảm 5.000đ', exp: '30/12', lock: '' }] } : b.phone === '0900000000' ? { ok: true, found: true, member: true, name: 'Chị Mai', la: 12000, laStep: 5000, vouchers: [{ id: 'KM02', name: 'Chào mừng', text: 'Giảm 5.000đ', exp: '30/12', lock: '' }] } : { ok: true, found: false, member: false };
+  if (b.action === 'quote') {
+    const qty = {}; b.items.forEach(i => { qty[i.name] = { sell: i.qty, gift: 0 }; });
+    const o = calcOrder(DEMO.products, DEMO.tiers, qty), voucher = b.voucher ? { id: b.voucher, name: 'Chào mừng', save: 5000 } : null, la = b.useLa ? Math.min(12000, o.total - (voucher ? 5000 : 0)) : 0;
+    return { ok: true, quote: { lines: o.lines.map(l => ({ name: l.name, qty: l.qty })), gross: o.total + o.discount, discount: o.discount, goodsNet: o.total, la, laMax: 12000, ship: 0, total: o.total - (voucher ? 5000 : 0) - la, applied: [], voucher, vErr: '', laErr: '' } };
+  }
   if (b.action === 'orders') return { ok: true, orders: JSON.parse(JSON.stringify(DEMO_ORDERS)) };
   if (b.action === 'orderAct') {
     const o = DEMO_ORDERS.find(x => x.code === b.code);
@@ -732,6 +792,12 @@ const ERR = {
   BAD_FIX: () => 'Phương án xử lý không hợp lệ.',
   NOT_FOUND: () => 'Không tìm thấy mục này trong file Đơn online. Tải lại rồi thử lại.',
   BAN_COLS: () => 'Ô N1 hoặc O1 của sheet BÁN HÀNG đang có chữ khác, không dùng làm cột đánh giá được. Xoá hoặc đổi chữ ở đó rồi thử lại.',
+  MK_KIND: () => 'Chọn loại chương trình.', MK_NAME: () => 'Nhập tên chương trình.', MK_GIFT: () => 'Chọn món tặng trong danh sách.',
+  MK_VAL: () => 'Mức giảm không hợp lệ. Viết 10% hoặc số tiền như 10000.', MK_DATE: () => 'Ngày không hợp lệ, hoặc ngày kết thúc trước ngày bắt đầu.',
+  MK_CHANGED: () => 'Chương trình này đã bị sửa ở nơi khác. Bấm Tải lại rồi thử lại.',
+  NEED_MEMBER: () => 'Khách chưa phải thành viên nên chưa dùng được voucher hoặc lá.', VOUCHER_NONE: () => 'Khách không có voucher này.',
+  VOUCHER_USED: () => 'Voucher này đang dùng cho đơn khác.', VOUCHER_EXPIRED: () => 'Voucher đã hết hạn.', VOUCHER_MIN: () => 'Đơn chưa đủ điều kiện dùng voucher này.',
+  LA_MIN: () => 'Đơn hoặc số lá của khách chưa đủ một mốc để dùng lá.', LA_CHANGED: () => 'Số lá của khách vừa thay đổi. Thử lại.',
   UNKNOWN_ACTION: () => 'Script trên sheet là bản cũ. Dán lại Code.gs mới rồi deploy phiên bản mới.',
   SERVER: r => 'Sheet báo lỗi: ' + (r.message || 'không rõ') + '. Chưa lưu.'
 };
@@ -797,7 +863,7 @@ function renderAll() {
   document.querySelectorAll('.nav button').forEach(b => b.dataset.tab === S.tab ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
   $('title').textContent = TITLES[S.tab];
   $('whenBtn').hidden = !entry || list; if (!entry || list) $('whenBox').hidden = true;
-  if (list) renderLedger(); else ({ home: renderHome, sale: renderSale, buy: renderBuy, make: renderMake, cust: renderCustList, order: renderOrders, bcqt: renderBcqt })[S.tab]();
+  if (list) renderLedger(); else ({ home: renderHome, sale: renderSale, buy: renderBuy, make: renderMake, cust: renderCustList, order: renderOrders, bcqt: renderBcqt, mkt: renderMkt })[S.tab]();
   renderBar();
 }
 function showMsg(kind, ...kids) {
@@ -809,9 +875,16 @@ const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 function barState() {
   if (listView()) return null;
   const lab = t => (editing() ? 'Lưu thay đổi' : t);
+  if (S.tab === 'sale' && !editing()) {
+    const P = S.sale.pos;
+    if (P.step === 'after') return null;
+    const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
+    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(P.quote && o.count ? P.quote.total : o.total), label: P.busy ? 'Đang lên đơn…' : 'Đặt hàng', ok: o.count > 0 && !P.busy };
+  }
   if (S.tab === 'sale') {
     const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
-    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(o.total), label: lab(S.sale.mode === 'queue' ? 'Lên đơn giao' : 'Lưu đơn'), ok: o.count > 0 };
+    const qq = S.sale.mode === 'queue' && !editing() && S.sale.q.quote ? S.sale.q.quote : null;
+    return { small: o.count ? o.count + ' chai' : 'Chưa có món', big: vnd(qq ? qq.total : o.total), label: lab(S.sale.mode === 'queue' ? 'Lên đơn giao' : 'Lưu đơn'), ok: o.count > 0 };
   }
   if (S.tab === 'buy') {
     const n = S.buy.lines.length, total = S.buy.lines.reduce((s, l) => s + (pmoney(l.cost) || 0), 0);
@@ -833,7 +906,7 @@ function renderBar() {
 }
 // Gửi một lần lưu. Mất mạng khi nhập mới thì giữ lại trên máy và tự gửi sau; requestId chống ghi trùng.
 const RESET = {
-  sale: () => Object.assign(S.sale, { qty: {}, giftOpen: {}, cust: null, paid: null, q: { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false } }),
+  sale: () => Object.assign(S.sale, { pos: { step: 'menu' }, qty: {}, giftOpen: {}, cust: null, paid: null, q: { name: '', phone: '', area: 'cc', place: '', pay: 'cash', paid: false, voucher: '', useLa: false, info: null, quote: null, qkey: '' } }),
   buy: () => { S.buy.lines = []; },
   make: () => Object.assign(S.make, { cot: null, water: '', out: '', amounts: {}, touched: {}, all: false })
 };
@@ -862,7 +935,13 @@ async function send(body, label, onOk) {
 $('saveBtn').addEventListener('click', () => ({ sale: saveSale, buy: saveBuy, make: saveMake })[S.tab]());
 
 /* ================= BÁN ================= */
-function renderSale() { renderSaleMode(); renderSaleCust(); renderSaleChips(); renderProducts(); renderBill(); renderRecent(); }
+function renderSale() {
+  const pos = !editing();
+  $('posBox').hidden = !pos; $('posBox').className = 'posbox'; $('legacySale').hidden = pos;
+  if (pos) { renderPos(); return; }
+  S.sale.mode = 'direct';
+  renderSaleMode(); renderSaleCust(); renderSaleChips(); renderProducts(); renderBill(); renderRecent();
+}
 function renderSaleMode() {
   const m = S.sale.mode, q = S.sale.q, queue = m === 'queue' && !editing();
   $('modeSec').hidden = MODE !== 'banhang' || !!editing();
@@ -870,13 +949,73 @@ function renderSaleMode() {
     chip('Lên đơn giao, vào hàng chờ', m === 'queue', () => { S.sale.mode = 'queue'; fillQ(S.sale.cust); renderSale(); renderBar(); }));
   $('qSec').hidden = !queue; $('placeSec').hidden = queue; $('paySec').hidden = queue;
   if (!queue) return;
-  const inp = (k, ph, mode) => h('input', { class: 'search', placeholder: ph, value: q[k], inputmode: mode || 'text', autocomplete: 'off', oninput: e => { q[k] = e.target.value; } });
+  const inp = (k, ph, mode) => h('input', { class: 'search', placeholder: ph, value: q[k], inputmode: mode || 'text', autocomplete: 'off', name: 'sam-' + k, oninput: e => { q[k] = e.target.value; if (k === 'phone') phoneChanged(); } });
   $('qBox').replaceChildren(
     inp('name', 'Tên khách'), inp('phone', 'Số điện thoại (có thì ghi, để khách thành thành viên sau)', 'tel'),
     h('div', { class: 'chips', style: 'margin:10px 0' }, chip((S.data.building || 'Chung cư'), q.area === 'cc', () => { q.area = 'cc'; renderSaleMode(); }), chip('Bên ngoài', q.area === 'out', () => { q.area = 'out'; renderSaleMode(); })),
     inp('place', q.area === 'cc' ? 'Số căn hộ, ví dụ A0605' : 'Địa chỉ giao hàng'),
     h('div', { class: 'chips', style: 'margin:10px 0' }, chip('Tiền mặt', q.pay === 'cash', () => { q.pay = 'cash'; renderSaleMode(); }), chip('Chuyển khoản', q.pay === 'bank', () => { q.pay = 'bank'; renderSaleMode(); })),
-    h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: q.paid, onchange: e => { q.paid = e.target.checked; } }), 'Khách đã trả tiền rồi'));
+    h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: q.paid, onchange: e => { q.paid = e.target.checked; } }), 'Khách đã trả tiền rồi'),
+    h('div', { id: 'qExtra' }));
+  renderQExtra(); scheduleQuote();
+}
+/* ----- Khách thành viên: lá, voucher và giá sau khuyến mãi của đơn tiệm lên ----- */
+let qTimer = null, phoneTimer = null;
+const normPhone = v => { let p = String(v || '').replace(/[^\d+]/g, ''); if (p.indexOf('+84') === 0) p = '0' + p.slice(3); return /^0\d{9}$/.test(p) ? p : ''; };
+function phoneChanged() {
+  const q = S.sale.q; q.info = null; q.voucher = ''; q.useLa = false; q.quote = null; q.qkey = '';
+  clearTimeout(phoneTimer);
+  const ph = normPhone(q.phone);
+  if (!ph) { renderQExtra(); return; }
+  phoneTimer = setTimeout(async () => {
+    try {
+      const r = await api({ action: 'custInfo', phone: ph });
+      if (r.ok && normPhone(S.sale.q.phone) === ph) { S.sale.q.info = r; renderQExtra(); scheduleQuote(true); }
+    } catch (e) { /* mạng yếu: bỏ qua, đơn vẫn lên được */ }
+  }, 450);
+}
+function scheduleQuote(force) {
+  const q = S.sale.q;
+  if (S.sale.mode !== 'queue' || editing() || !S.cfg) return;
+  const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty), lines = o.lines.filter(l => l.group !== 'CHO TẶNG');
+  const key = JSON.stringify([lines.map(l => [l.name, l.qty]), q.area, normPhone(q.phone), q.voucher, q.useLa]);
+  if (!lines.length) { q.quote = null; q.qkey = ''; renderQExtra(); renderBar(); return; }
+  if (key === q.qkey && !force) return;
+  clearTimeout(qTimer);
+  qTimer = setTimeout(async () => {
+    try {
+      const r = await api({ action: 'quote', items: lines.map(l => ({ name: l.name, qty: l.qty })), area: q.area, phone: normPhone(q.phone), voucher: q.voucher, useLa: q.useLa });
+      if (!r.ok) { q.quote = null; q.qerr = errText(r); }
+      else {
+        q.quote = r.quote; q.qkey = key; q.qerr = '';
+        if (r.quote.vErr) { q.qerr = errText({ error: r.quote.vErr }); q.voucher = ''; }
+        if (r.quote.laErr) { q.qerr = errText({ error: r.quote.laErr }); q.useLa = false; }
+      }
+    } catch (e) { q.quote = null; }
+    renderQExtra(); renderBar();
+  }, 350);
+}
+function renderQExtra() {
+  const box = $('qExtra'), q = S.sale.q;
+  if (!box) return;
+  const info = q.info, quo = q.quote, kids = [];
+  if (info && info.member) {
+    kids.push(h('div', {}, h('b', {}, info.name || 'Thành viên'), ' · thành viên · ', h('b', {}, (info.la || 0).toLocaleString('vi-VN') + ' lá')));
+    if ((info.vouchers || []).length) {
+      kids.push(h('div', { style: 'margin-top:8px' }, 'Voucher của khách:'),
+        h('div', { class: 'chips' }, info.vouchers.map(v => chip(v.name + ' · ' + v.text.replace('Giảm ', '−') + (v.lock ? ' (đang dùng)' : ''), q.voucher === v.id, () => { if (v.lock) return; q.voucher = q.voucher === v.id ? '' : v.id; renderQExtra(); scheduleQuote(true); }))));
+    }
+    if ((info.la || 0) > 0) kids.push(h('div', { style: 'margin-top:6px;color:var(--muted)' }, laMsgPos(info.la, info.laStep)));
+    if ((info.la || 0) >= (info.laStep || 5000)) kids.push(h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: q.useLa, onchange: e => { q.useLa = e.target.checked; renderQExtra(); scheduleQuote(true); } }), 'Khách dùng lá để trừ tiền'));
+  } else if (info && info.found === false && normPhone(q.phone)) kids.push(h('div', { style: 'color:var(--muted)' }, 'Chưa là thành viên. Khách đăng ký trên trang đặt hàng để có voucher và lá.'));
+  if (quo) {
+    const gifts = quo.lines.filter(l => l.gift).map(l => '🎁 tặng ' + l.qty + ' ' + splitName(l.name).base + ' ' + splitName(l.name).rest);
+    const rows = [].concat(quo.applied.map(a => a.name + (a.gift ? '' : a.save ? ' (−' + vnd(a.save) + ')' : '')), quo.voucher ? ['Voucher ' + quo.voucher.name + ' (−' + vnd(quo.voucher.save) + ')'] : [], gifts);
+    if (rows.length || quo.la) kids.push(h('div', { style: 'margin-top:8px' }, rows.map(t => h('div', {}, t)), quo.la ? h('div', {}, 'Dùng ' + quo.la.toLocaleString('vi-VN') + ' lá (−' + vnd(quo.la) + ')') : ''));
+    if (rows.length || quo.la) kids.push(h('div', { style: 'margin-top:6px' }, 'Tổng sau khuyến mãi: ', h('b', {}, vnd(quo.total))));
+  }
+  if (q.qerr) kids.push(h('div', { style: 'margin-top:6px;color:var(--danger)' }, q.qerr));
+  box.replaceChildren(...(kids.length ? [h('div', { class: 'qx' }, kids)] : []));
 }
 function fillQ(c) {
   const q = S.sale.q;
@@ -941,19 +1080,22 @@ function renderProducts() {
   for (const [base, list] of groups) {
     out.push(h('div', { class: 'group' }, h('h3', {}, base), list.map(({ p, rest }) => {
       const q = S.sale.qty[p.name] || {};
-      const showGift = S.sale.giftOpen[p.name] || q.gift > 0;
+      const pos = !editing(), showGift = !pos && (S.sale.giftOpen[p.name] || q.gift > 0);
       return h('div', { class: 'item' + (q.sell || q.gift ? ' on' : '') },
         h('div', {}, h('div', { class: 'size' }, rest || p.name), h('div', { class: 'price num' }, vnd(p.price))),
         stepper(p.name, 'sell', rest + ' ' + base),
         showGift
           ? h('div', { class: 'gift' }, h('span', { class: 'lbl' }, 'Tặng kèm (không tính tiền)'), stepper(p.name, 'gift', 'tặng ' + rest + ' ' + base))
-          : h('button', { class: 'gift-toggle', onclick: () => { S.sale.giftOpen[p.name] = true; renderProducts(); } }, 'Tặng thêm chai này'));
+          : (pos ? '' : h('button', { class: 'gift-toggle', onclick: () => { S.sale.giftOpen[p.name] = true; renderProducts(); } }, 'Tặng thêm chai này')));
     })));
   }
-  $('products').replaceChildren(...out);
+  const tgt = !editing() ? $('posProducts') : $('products');
+  if (tgt) tgt.replaceChildren(...out);
 }
 function renderBill() {
+  if (!editing()) { posQuote(); return; }
   const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty), bill = $('bill');
+  scheduleQuote();
   if (!o.lines.length) { bill.replaceChildren(h('p', { class: 'empty' }, 'Bấm + ở món khách mua. Giảm giá theo số lượng tự tính ở đây.')); return; }
   const rows = o.lines.map(l => {
     const s = splitName(l.name);
@@ -981,6 +1123,7 @@ function renderRecent() {
   $('recent').replaceChildren(...list.map(r => h('li', {}, h('span', {}, r.code), h('span', { class: 'num' }, vnd(r.total)))));
 }
 function saveSale() {
+  if (!editing()) { posOrder(); return; }
   const o = calcOrder(S.data.products, S.data.tiers, S.sale.qty);
   if (!o.count) return;
   if (S.sale.mode === 'queue' && !editing()) {
@@ -988,7 +1131,7 @@ function saveSale() {
     if (!lines.length) { showMsg('err', 'Đơn giao không có món tặng riêng. Chọn món bán.'); toTop(); return; }
     if (!q.place.trim()) { showMsg('err', q.area === 'cc' ? 'Chưa nhập số căn hộ.' : 'Chưa nhập địa chỉ giao.'); toTop(); return; }
     send({ action: 'orderCreate', items: lines.map(l => ({ name: l.name, qty: l.qty })), name: q.name.trim(), phone: q.phone.trim(), area: q.area,
-      apt: q.area === 'cc' ? q.place.trim() : '', addr: q.area === 'out' ? q.place.trim() : '', pay: q.pay, paid: q.paid },
+      apt: q.area === 'cc' ? q.place.trim() : '', addr: q.area === 'out' ? q.place.trim() : '', pay: q.pay, paid: q.paid, voucher: q.voucher, useLa: q.useLa },
       'Đơn giao ' + o.count + ' chai', r => {
         showMsg('ok', 'Đã lên đơn ', h('b', {}, r.order ? r.order.code : ''), ' vào hàng chờ. Xem ở mục Đơn.');
         if (r.order && ORD.list) ORD.list.unshift(r.order);
@@ -1014,6 +1157,210 @@ function saveSale() {
   });
 }
 
+/* ================= BÁN tại quầy: chọn món, đặt cho bếp, rồi mới hỏi khách tích lá ================= */
+function laMsgPos(la, step) {
+  step = step || 5000; la = Number(la) || 0;
+  const use = Math.floor(la / step) * step, next = use + step, f = n => n.toLocaleString('vi-VN');
+  return 'Đang có ' + f(la) + ' lá, ' + (use > 0 ? 'dùng ngay hoặc ' : '') + 'tích thêm ' + f(next - la) + ' lá để được giảm ' + f(next) + 'đ.';
+}
+function posBlank() { return { step: 'menu' }; }
+function posItems() {
+  const P = S.sale.pos;
+  if (P.step === 'after' && P.order) {
+    const m = {};
+    P.order.lines.filter(l => !l.gift).forEach(l => { m[l.name] = (m[l.name] || 0) + l.qty; });
+    return Object.keys(m).map(n => ({ name: n, qty: m[n] }));
+  }
+  return calcOrder(S.data.products, S.data.tiers, S.sale.qty).lines.filter(l => l.group !== 'CHO TẶNG').map(l => ({ name: l.name, qty: l.qty }));
+}
+function renderPos() {
+  const P = S.sale.pos;
+  if (P.step === 'after') { renderPosAfter(); return; }
+  $('posBox').replaceChildren(
+    h('div', { id: 'posPromos' }),
+    h('section', {}, h('h2', {}, 'Chọn món'), h('div', { id: 'posProducts' }), h('div', { id: 'posSum' })));
+  if (!MK.rows && !MK.busy) loadMk();
+  renderPosPromos(); renderProducts(); posQuote(true);
+}
+function renderPosPromos() {
+  const box = $('posPromos'); if (!box) return;
+  const run = (MK.rows || []).filter(r => !r.state && r.kind !== 'Voucher');
+  box.replaceChildren(...(run.length ? [h('div', { class: 'promos' }, run.map(r => h('span', {}, '🎁 ' + r.name)))] : []));
+}
+function quoteLines(quo) {
+  if (!quo) return [];
+  const gifts = quo.lines.filter(l => l.gift).map(l => '🎁 tặng ' + l.qty + ' ' + splitName(l.name).base + ' ' + splitName(l.name).rest);
+  const rows = [].concat(quo.applied.map(a => a.name + (a.gift ? '' : a.save ? ' (−' + vnd(a.save) + ')' : '')), quo.voucher ? ['Voucher ' + quo.voucher.name + ' (−' + vnd(quo.voucher.save) + ')'] : [], gifts);
+  if (quo.la) rows.push('Dùng ' + quo.la.toLocaleString('vi-VN') + ' lá (−' + vnd(quo.la) + ')');
+  return rows;
+}
+function posQuote(force) {
+  const P = S.sale.pos;
+  if (!S.cfg || !S.data) return;
+  const items = posItems(), phone = P.step === 'after' ? normPhone(P.phone) : '';
+  const key = JSON.stringify([items, phone, P.voucher || '', !!P.useLa]);
+  if (!items.length) { P.quote = null; P.qkey = ''; renderPosSum(); renderBar(); return; }
+  if (key === P.qkey && !force) { renderPosSum(); return; }
+  clearTimeout(qTimer);
+  qTimer = setTimeout(async () => {
+    try {
+      const r = await api({ action: 'quote', items, area: 'cc', phone, voucher: P.voucher || '', useLa: !!P.useLa });
+      if (!r.ok) { P.quote = null; P.qerr = errText(r); }
+      else {
+        P.quote = r.quote; P.qkey = key; P.qerr = '';
+        if (r.quote.vErr) { P.qerr = errText({ error: r.quote.vErr }); P.voucher = ''; }
+        if (r.quote.laErr) { P.qerr = errText({ error: r.quote.laErr }); P.useLa = false; }
+      }
+    } catch (e) { P.quote = null; }
+    renderPosSum(); renderBar();
+  }, 300);
+}
+function renderPosSum() {
+  const P = S.sale.pos, quo = P.quote;
+  if (P.step === 'after') { renderPosBill(); renderPosAct(); return; }
+  const box = $('posSum'); if (!box) return;
+  const rows = quoteLines(quo);
+  box.replaceChildren(...(quo && rows.length ? [h('div', { class: 'sum' }, rows.map(t => h('div', {}, t)), h('div', { style: 'margin-top:6px' }, 'Tổng sau khuyến mãi: ', h('b', {}, vnd(quo.total))))] : []));
+}
+async function posOrder() {
+  const P = S.sale.pos;
+  if (P.busy || P.step !== 'menu') return;
+  const items = posItems(); if (!items.length) return;
+  P.busy = true; P.rid = P.rid || uid(); renderBar(); showMsg(null);
+  try {
+    const r = await api({ action: 'orderCreate', requestId: P.rid, items, name: '', phone: '', area: 'cc', apt: '', pay: 'cash', ship: 0, status: 'ok', src: 'Tại quầy', paid: false });
+    P.busy = false;
+    if (!r.ok) { showMsg('err', errText(r)); renderBar(); toTop(); return; }
+    const keep = { step: 'after', order: r.order, phone: '', name: '', apt: '', info: null, voucher: '', useLa: false, quote: null, qkey: '', qerr: '', pay: 'cash', applied: '', reg: false, granted: [] };
+    S.sale.pos = keep; S.sale.qty = {}; S.sale.giftOpen = {};
+    if (ORD.list) ORD.list.unshift(r.order);
+    loadOrders(true); renderAll(); toTop();
+  } catch (e) { P.busy = false; showMsg('err', 'Mất kết nối. Chưa lên được đơn, bấm Đặt hàng lại (không bị ghi trùng).'); renderBar(); toTop(); }
+}
+function posSnap() { const P = S.sale.pos; return JSON.stringify([normPhone(P.phone), P.voucher || '', !!P.useLa]); }
+function posPending() { const P = S.sale.pos; return !!normPhone(P.phone) && P.applied !== posSnap(); }
+function renderPosAfter() {
+  const P = S.sale.pos, o = P.order;
+  const phone = h('input', { class: 'search', id: 'posPhone', inputmode: 'tel', placeholder: 'Số điện thoại của khách', value: P.phone, autocomplete: 'off', name: 'sam-pos-phone', oninput: e => { P.phone = e.target.value; posPhoneChanged(); } });
+  $('posBox').replaceChildren(
+    h('div', { class: 'note ok' }, 'Đã lên đơn ', h('b', {}, o.code), ' cho bếp. Hỏi khách có tích lá không nhé.'),
+    h('section', {}, h('h2', {}, 'Bill'), h('div', { class: 'pcard', id: 'posBill' })),
+    h('section', {}, h('h2', {}, 'Khách tích lá'), phone, h('div', { id: 'posCust' })),
+    h('section', {}, h('h2', {}, 'Thanh toán'), h('div', { class: 'chips', id: 'posPays' })),
+    h('div', { class: 'acts', id: 'posAct' }));
+  renderPosCust(); renderPosPays(); posQuote(true); renderPosBill(); renderPosAct();
+}
+function renderPosBill() {
+  const box = $('posBill'); if (!box) return;
+  const P = S.sale.pos, o = P.order, quo = P.quote, pend = posPending();
+  const kids = o.lines.map(l => h('div', { class: 'row' }, h('span', { class: 'q num' }, l.qty + '×'), h('span', { class: 'n' }, (l.gift ? '🎁 ' : '') + splitName(l.name).base + ' ' + splitName(l.name).rest + (l.gift ? ' (tặng)' : ''))));
+  kids.push(h('hr', { class: 'rule' }));
+  if (o.discount) kids.push(h('div', { class: 'row minus' }, h('span', { class: 'n' }, 'Đã giảm'), h('span', { class: 'a num' }, '−' + vnd(o.discount))));
+  if (o.la) kids.push(h('div', { class: 'row minus' }, h('span', { class: 'n' }, 'Đã dùng lá'), h('span', { class: 'a num' }, '−' + vnd(o.la))));
+  if (o.promo) kids.push(h('div', { style: 'color:var(--muted);font-size:13px' }, 'Áp dụng: ' + o.promo));
+  kids.push(h('div', { class: 'total' }, h('span', {}, 'Tổng bill'), h('span', { class: 'num' }, vnd(o.total))));
+  if (pend && quo) {
+    const rows = quoteLines(quo);
+    kids.push(h('div', { class: 'sum' }, h('b', {}, 'Sau khi cập nhật: ' + vnd(quo.total)), ...rows.map(t => h('div', {}, t))));
+  }
+  if (P.qerr) kids.push(h('div', { style: 'margin-top:6px;color:var(--danger)' }, P.qerr));
+  box.replaceChildren(...kids);
+}
+function posPhoneChanged() {
+  const P = S.sale.pos; P.info = null; P.voucher = ''; P.useLa = false; P.quote = null; P.qkey = ''; P.reg = false;
+  clearTimeout(phoneTimer);
+  const ph = normPhone(P.phone);
+  if (!ph) { renderPosCust(); posQuote(true); renderPosBill(); renderPosAct(); return; }
+  P.loading = true; renderPosCust(); renderPosAct();
+  phoneTimer = setTimeout(async () => {
+    try {
+      const r = await api({ action: 'custInfo', phone: ph });
+      if (r.ok && normPhone(S.sale.pos.phone) === ph) { P.info = r; if (!P.name && r.name) P.name = r.name; }
+    } catch (e) { /* mạng yếu */ }
+    P.loading = false; renderPosCust(); posQuote(true); renderPosBill(); renderPosAct();
+  }, 450);
+}
+function renderPosCust() {
+  const box = $('posCust'); if (!box) return;
+  const P = S.sale.pos, info = P.info, ph = normPhone(P.phone), kids = [];
+  const upd = () => { renderPosCust(); posQuote(true); renderPosBill(); renderPosAct(); };
+  if (!ph) kids.push(h('div', { style: 'color:var(--muted);margin-top:8px' }, 'Nhập số điện thoại để cộng lá, dùng voucher. Khách không tích thì bỏ qua, bấm thu tiền bên dưới.'));
+  else if (P.loading || !info) kids.push(h('div', { style: 'color:var(--muted);margin-top:8px' }, 'Đang tìm khách…'));
+  else if (info.member) {
+    kids.push(h('div', { style: 'margin-top:8px' }, h('b', {}, info.name || 'Thành viên'), ' · thành viên · ', h('b', {}, (info.la || 0).toLocaleString('vi-VN') + ' lá')));
+    if ((info.vouchers || []).length) kids.push(h('div', { style: 'margin-top:8px' }, 'Voucher của khách:'), h('div', { class: 'chips' }, info.vouchers.map(v => chip(v.name + ' · ' + v.text.replace('Giảm ', '−') + (v.lock ? ' (đang dùng)' : ''), P.voucher === v.id, () => { if (v.lock) return; P.voucher = P.voucher === v.id ? '' : v.id; upd(); }))));
+    if ((info.la || 0) > 0) kids.push(h('div', { style: 'margin-top:6px;color:var(--muted)' }, laMsgPos(info.la, info.laStep)));
+    if ((info.la || 0) >= (info.laStep || 5000)) kids.push(h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: P.useLa, onchange: e => { P.useLa = e.target.checked; upd(); } }), 'Khách dùng lá để trừ tiền'));
+  } else {
+    kids.push(h('div', { style: 'margin-top:8px' }, 'Chưa là thành viên. Đăng ký giúp khách để tích lá và nhận voucher chào mừng:'),
+      h('div', { class: 'fld' },
+        h('input', { class: 'search', placeholder: 'Tên khách', value: P.name || '', autocomplete: 'off', name: 'sam-pos-name', oninput: e => { P.name = e.target.value; renderPosAct(); } }),
+        h('input', { class: 'search', placeholder: 'Căn hộ', value: P.apt || '', autocomplete: 'off', name: 'sam-pos-apt', oninput: e => { P.apt = e.target.value; } })));
+  }
+  if ((P.granted || []).length) kids.push(h('div', { style: 'margin-top:8px;color:var(--green-2);font-weight:600' }, '🎁 Đã tặng voucher: ' + P.granted.join(', ')));
+  box.replaceChildren(...kids);
+}
+function renderPosPays() {
+  const box = $('posPays'); if (!box) return;
+  const P = S.sale.pos;
+  box.replaceChildren(chip('Tiền mặt', P.pay === 'cash', () => { P.pay = 'cash'; renderPosPays(); }), chip('Chuyển khoản', P.pay === 'bank', () => { P.pay = 'bank'; renderPosPays(); }));
+}
+function renderPosAct() {
+  const box = $('posAct'); if (!box) return;
+  const P = S.sale.pos, o = P.order, pend = posPending(), info = P.info, busy = !!P.busy;
+  const notMember = pend && info && !info.member;
+  const btns = [];
+  if (pend) {
+    const quo = P.quote;
+    btns.push(h('button', { class: 'pri', disabled: busy || P.loading || !info || (notMember && !(P.name || '').trim()), onclick: posAttach },
+      busy ? 'Đang cập nhật…' : notMember ? 'Đăng ký thành viên & cập nhật bill' : 'Cập nhật bill' + (quo ? ' · ' + vnd(quo.total) : '')),
+      h('button', { class: 'sec', onclick: () => { P.phone = ''; const i = $('posPhone'); if (i) i.value = ''; posPhoneChanged(); } }, 'Khách không tích lá'));
+  } else {
+    btns.push(h('button', { class: 'pri', disabled: busy, onclick: posFinish }, busy ? 'Đang ghi sổ…' : 'Đã thu ' + vnd(o.total) + ' · xong đơn'));
+  }
+  btns.push(h('button', { class: 'sec', disabled: busy, onclick: posNext }, 'Thu sau, bán đơn mới'));
+  box.replaceChildren(...btns);
+}
+function posNext() { S.sale.pos = posBlank(); S.sale.qty = {}; showMsg(null); renderAll(); toTop(); }
+async function posAttach() {
+  const P = S.sale.pos, info = P.info; if (P.busy || !info) return;
+  P.busy = true; renderPosAct(); showMsg(null);
+  try {
+    const r = await api({ action: 'orderAttach', requestId: uid(), code: P.order.code, phone: normPhone(P.phone), name: (P.name || '').trim(), apt: (P.apt || '').trim(), register: !info.member, voucher: P.voucher || '', useLa: !!P.useLa });
+    P.busy = false;
+    if (!r.ok) {
+      if (r.order) P.order = r.order;
+      showMsg('err', errText(r)); renderPosBill(); renderPosAct(); toTop(); return;
+    }
+    P.order = r.order; P.granted = r.granted || []; P.qerr = '';
+    if (ORD.list) { const i = ORD.list.findIndex(x => x.code === r.order.code); if (i >= 0) ORD.list[i] = r.order; }
+    if (!info.member) {      // vừa đăng ký: lấy lại lá và voucher để khách chọn dùng cho lần sau
+      try { const ci = await api({ action: 'custInfo', phone: normPhone(P.phone) }); if (ci.ok) P.info = ci; } catch (e) { /* bỏ qua */ }
+    }
+    P.applied = posSnap(); P.quote = null; P.qkey = '';
+    showMsg('ok', 'Đã cập nhật bill ', h('b', {}, r.order.code), ': ', h('b', {}, vnd(r.order.total)), '.');
+    renderPosCust(); renderPosBill(); renderPosAct(); toTop();
+  } catch (e) { P.busy = false; showMsg('err', 'Mất kết nối. Chưa cập nhật được, thử lại.'); renderPosAct(); toTop(); }
+}
+async function posFinish() {
+  const P = S.sale.pos, o = P.order; if (P.busy) return;
+  P.busy = true; renderPosAct(); showMsg(null);
+  try {
+    if ((P.pay === 'bank') !== !!o.bank) {
+      const a = await api({ action: 'orderAct', requestId: uid(), code: o.code, act: 'pay', pay: P.pay });
+      if (!a.ok) { P.busy = false; showMsg('err', errText(a)); renderPosAct(); toTop(); return; }
+    }
+    const r = await api({ action: 'orderAct', requestId: uid(), code: o.code, act: 'done', paid: true });
+    P.busy = false;
+    if (!r.ok) { showMsg('err', errText(r)); renderPosAct(); toTop(); return; }
+    dirty(); refresh(); loadOrders(true);
+    S.sale.pos = posBlank(); S.sale.qty = {};
+    if (r.bookError) showMsg('err', 'Đơn ', h('b', {}, o.code), ' đã thu tiền nhưng CHƯA ghi được vào BÁN HÀNG: ', errText({ error: r.bookError, name: r.bookName }), ' Vào mục Đơn bấm "Ghi vào BÁN HÀNG" để thử lại.');
+    else showMsg('ok', 'Xong đơn ', h('b', {}, o.code), ', thu ' + vnd(r.order ? r.order.total : o.total) + (r.sale ? ', mã bán hàng ' + r.sale : '') + '.');
+    renderAll(); toTop();
+  } catch (e) { P.busy = false; showMsg('err', 'Mất kết nối. Chưa chốt được, thử lại.'); renderPosAct(); toTop(); }
+}
+
 /* ================= BCQT ================= */
 let BC = { rows: null, error: null, busy: false };
 async function loadBcqt() {
@@ -1037,6 +1384,105 @@ function renderBcqt() {
     h('table', { style: 'width:100%;border-collapse:collapse;margin-top:14px;font-size:14px' }, h('thead', {}, rowEl(7, true)), h('tbody', {}, body)),
     g(22, 0) ? h('p', { class: 'small', style: 'color:var(--muted);margin-top:12px' }, g(22, 0)) : '',
     h('button', { class: 'link', style: 'margin-top:10px', onclick: () => { BC.rows = null; renderBcqt(); } }, 'Tải lại'));
+}
+
+/* ================= KHUYẾN MÃI ================= */
+// Quản lý: nhập và sửa chương trình. Bán hàng: chỉ xem các chương trình đang chạy.
+let MK = { rows: null, products: [], error: null, busy: false, form: null, formErr: '', saving: false };
+const MK_AUDS = ['Toàn hệ thống', 'Thành viên', 'Khách mới'], MK_KINDS = ['Tặng món', 'Giảm giá', 'Miễn ship', 'Voucher'];
+const audShort = a => a === 'Toàn hệ thống' ? 'Mọi khách' : a;
+async function loadMk() {
+  if (MK.busy) return; MK.busy = true;
+  try {
+    const r = await api({ action: 'marketing' });
+    if (r.ok) { MK.rows = r.rows; MK.products = r.products || []; MK.error = null; }
+    else MK.error = r.error === 'UNKNOWN_ACTION' ? ERR.UNKNOWN_ACTION() : errText(r);
+  } catch (e) { MK.error = 'Không tải được chương trình. Kiểm tra mạng rồi thử lại.'; }
+  MK.busy = false; if (S.tab === 'mkt') renderMkt(); else if (S.tab === 'sale' && !editing()) renderPosPromos();
+}
+const dmy = s => { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? Number(m[3]) + '/' + Number(m[2]) : ''; };
+function mkBlank() { return { row: 0, id: '', on: true, name: '', aud: 'Toàn hệ thống', kind: 'Tặng món', minQty: '', minMoney: '', val: '', giftQty: 1, per: 'Mỗi đơn', from: '', to: '', stack: true, days: 30, desc: '' }; }
+function renderMkt() {
+  const box = $('mktBox'), edit = MODE === 'quanly';
+  if (!MK.rows && !MK.error) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tải chương trình…')); loadMk(); return; }
+  if (MK.error) { box.replaceChildren(h('div', { class: 'note err', role: 'alert' }, MK.error), h('button', { class: 'link', onclick: () => { MK.error = null; MK.rows = null; renderMkt(); } }, 'Thử lại')); return; }
+  if (MK.form) { renderMkForm(box); return; }
+  const run = MK.rows.filter(r => !r.state), off = MK.rows.filter(r => r.state);
+  const card = r => h('div', { class: 'mkc' + (r.state ? ' off' : '') },
+    h('b', {}, r.name), h('div', { class: 't' }, r.text),
+    h('div', { class: 'tags' },
+      h('span', {}, audShort(r.aud)), h('span', {}, r.kind),
+      r.from || r.to ? h('span', {}, (r.from ? 'Từ ' + dmy(r.from) : '') + (r.from && r.to ? ' ' : '') + (r.to ? 'đến ' + dmy(r.to) : '')) : h('span', {}, 'Chạy liên tục'),
+      !r.stack ? h('span', {}, 'Không cộng dồn') : '',
+      r.state ? h('span', { class: 'st' }, r.state) : ''),
+    edit ? h('div', { class: 'acts' },
+      h('button', { onclick: () => { MK.form = Object.assign(mkBlank(), r); MK.formErr = ''; renderMkt(); toTop(); } }, 'Sửa'),
+      h('button', { onclick: () => mkToggle(r) }, r.on ? 'Tắt' : 'Bật'),
+      h('button', { class: 'no', onclick: () => mkDelete(r) }, 'Xoá')) : '');
+  box.replaceChildren(...[
+    edit ? h('button', { class: 'chip', style: 'margin-bottom:12px', onclick: () => { MK.form = mkBlank(); MK.formErr = ''; renderMkt(); toTop(); } }, '+ Thêm chương trình') : '',
+    h('h2', {}, edit ? 'Đang chạy (' + run.length + ')' : 'Chương trình đang chạy'),
+    run.length ? run.map(card) : h('div', { class: 'blank' }, 'Chưa có chương trình nào đang chạy.'),
+    edit && off.length ? [h('h2', { style: 'margin-top:18px' }, 'Chưa chạy hoặc đã tắt (' + off.length + ')'), off.map(card)] : '',
+    h('p', { class: 'small', style: 'color:var(--muted);margin-top:14px;font-size:13.5px' }, 'Chương trình tự áp khi khách đặt hoặc khi lên đơn ở mục Bán. Khách thành viên luôn dùng được lá, kể cả khi đang dùng voucher.'),
+    h('button', { class: 'link', onclick: () => { MK.rows = null; renderMkt(); } }, 'Tải lại')].flat(9).filter(x => x !== '' && x != null));
+}
+function renderMkForm(box) {
+  const f = MK.form;
+  const inp = (k, ph, mode, type) => h('input', { class: 'search', type: type || 'text', placeholder: ph || '', value: f[k] == null ? '' : f[k], inputmode: mode || 'text', autocomplete: 'off', oninput: ev => { f[k] = ev.target.value; } });
+  const lab = t => h('label', { class: 'mklab' }, t);
+  const pick = (k, list, show) => h('div', { class: 'chips' }, list.map(v => chip(show ? show(v) : v, f[k] === v, () => { f[k] = v; renderMkt(); })));
+  box.replaceChildren(h('div', { class: 'mkform' },
+    h('button', { class: 'link', onclick: () => { MK.form = null; MK.formErr = ''; renderMkt(); } }, '‹ Danh sách'),
+    h('h2', { style: 'margin-top:6px' }, f.row ? 'Sửa chương trình' : 'Thêm chương trình'),
+    MK.formErr ? h('div', { class: 'note err', role: 'alert' }, MK.formErr) : '',
+    lab('Tên chương trình'), inp('name', 'Ví dụ: Tặng 1 chai dịp lễ'),
+    lab('Dành cho'), pick('aud', MK_AUDS, audShort),
+    lab('Loại'), pick('kind', MK_KINDS),
+    f.kind === 'Tặng món' ? [
+      lab('Món tặng'),
+      h('select', { class: 'search', onchange: ev => { f.val = ev.target.value; } }, h('option', { value: '' }, 'Chọn món…'), MK.products.map(n => h('option', { value: n, selected: n === f.val }, n))),
+      lab('Số lượng tặng'), inp('giftQty', '1', 'numeric'),
+      lab('Tặng theo'), pick('per', ['Mỗi đơn', 'Mỗi chai']),
+      h('div', { class: 'hint' }, 'Mỗi chai: cứ đủ điều kiện số chai thì tặng thêm một lần. Ví dụ từ 2 chai, mua 4 chai được tặng 2 lần.')] : '',
+    f.kind === 'Giảm giá' || f.kind === 'Voucher' ? [lab('Mức giảm'), inp('val', 'Ví dụ 10% hoặc 10000'), h('div', { class: 'hint' }, 'Viết 10% để giảm theo phần trăm, hoặc 10000 để giảm số tiền.')] : '',
+    f.kind === 'Voucher' ? [lab('Hạn dùng sau khi nhận (ngày)'), inp('days', '30', 'numeric'),
+      h('div', { class: 'hint' }, 'Để 0 là không hết hạn. Dành cho Khách mới: cấp một lần khi khách đăng ký thành viên. Dành cho Thành viên: cấp cho mọi thành viên, mỗi người một lần.')] : '',
+    f.kind !== 'Voucher' || true ? [lab(f.kind === 'Voucher' ? 'Điều kiện khi dùng voucher (để trống nếu không cần)' : 'Điều kiện (để trống nếu không cần)'),
+      h('div', { class: 'two' }, inp('minQty', 'Từ số chai', 'numeric'), inp('minMoney', 'Từ số tiền', 'numeric'))] : '',
+    lab('Thời gian chạy'),
+    h('div', { class: 'two' }, h('div', {}, h('div', { class: 'hint' }, 'Từ ngày'), inp('from', '', '', 'date')), h('div', {}, h('div', { class: 'hint' }, 'Đến ngày'), inp('to', '', '', 'date'))),
+    h('div', { class: 'hint' }, 'Để trống là chạy luôn, không giới hạn.'),
+    lab('Cộng dồn với chương trình khác'), pick('stack', [true, false], v => v ? 'Có' : 'Không'),
+    h('div', { class: 'hint' }, 'Không cộng dồn: khi đủ điều kiện, hệ thống chọn cách có lợi nhất cho khách (chương trình này riêng, hoặc các chương trình cộng dồn gộp lại).'),
+    lab('Dòng hiện trên banner (không bắt buộc)'), inp('desc', 'Để trống thì app tự viết'),
+    h('button', { class: 'go', disabled: MK.saving, onclick: saveMk }, MK.saving ? 'Đang lưu…' : 'Lưu chương trình')));
+}
+async function mkApi(body) {
+  MK.saving = true;
+  try { const r = await api(Object.assign({ requestId: uid() }, body)); MK.saving = false; return r; }
+  catch (e) { MK.saving = false; return { ok: false, error: 'SERVER', message: 'mất kết nối' }; }
+}
+async function saveMk() {
+  const f = MK.form, num = v => Number(String(v == null ? '' : v).replace(/\D/g, '')) || 0;
+  const p = Object.assign({}, f, { minQty: num(f.minQty), minMoney: num(f.minMoney), giftQty: num(f.giftQty) || 1, days: num(f.days) });
+  MK.formErr = ''; renderMkt();
+  const r = await mkApi({ action: 'marketingSave', p });
+  if (!r.ok) { MK.formErr = errText(r); renderMkt(); toTop(); return; }
+  MK.rows = r.rows; MK.products = r.products || MK.products; MK.form = null;
+  showMsg('ok', 'Đã lưu chương trình ', h('b', {}, p.name), '. Trang đặt hàng cập nhật trong khoảng 1 phút.');
+  renderMkt(); toTop();
+}
+async function mkToggle(r) {
+  const res = await mkApi({ action: 'marketingSave', p: Object.assign({}, r, { on: !r.on }) });
+  if (!res.ok) { showMsg('err', errText(res)); toTop(); return; }
+  MK.rows = res.rows; showMsg('ok', (r.on ? 'Đã tắt ' : 'Đã bật ') + r.name + '.'); renderMkt();
+}
+async function mkDelete(r) {
+  if (!confirm('Xoá chương trình "' + r.name + '"? Không khôi phục được.')) return;
+  const res = await mkApi({ action: 'marketingDel', row: r.row, id: r.id });
+  if (!res.ok) { showMsg('err', errText(res)); toTop(); return; }
+  MK.rows = res.rows; showMsg('ok', 'Đã xoá ' + r.name + '.'); renderMkt();
 }
 
 /* ================= MUA ================= */
@@ -1317,7 +1763,7 @@ async function refresh(force) {                  // sau mỗi lần lưu: lấy 
 }
 $('syncBtn').addEventListener('click', async () => {
   const b = $('syncBtn'); b.disabled = true; b.textContent = 'Đang tải…';
-  showMsg(null); dirty(); await flush(true); await refresh(true);
+  showMsg(null); dirty(); await flush(true); await refresh(true); if (MODE === 'banhang') await loadOrders(true);
   b.disabled = false; b.textContent = 'Tải lại';
 });
 
@@ -1629,7 +2075,11 @@ $('whenInput').addEventListener('change', e => { let v = e.target.value; if (v &
 $('whenNow').addEventListener('click', () => setWhen(null));
 
 /* ================= Đơn online ================= */
+const DEMO_MK = [{ row: 2, id: 'KM01', on: true, name: 'Mua từ 1 chai tặng 1 chai 330ml', aud: 'Toàn hệ thống', kind: 'Tặng món', minQty: 1, minMoney: 0, val: 'Sâm mía lau / chai / 330ml', giftQty: 1, per: 'Mỗi đơn', from: '', to: '2026-11-30', stack: true, days: 0, desc: '', state: '', text: 'Tặng 1 Sâm mía lau 330ml khi mua từ 1 chai (đến 30/11)' },
+  { row: 3, id: 'KM02', on: true, name: 'Chào mừng thành viên mới', aud: 'Khách mới', kind: 'Voucher', minQty: 0, minMoney: 0, val: '5000', giftQty: 1, per: 'Mỗi đơn', from: '', to: '', stack: true, days: 30, desc: '', state: '', text: 'Voucher giảm 5.000đ' },
+  { row: 4, id: 'KM03', on: false, name: 'Giảm 10% dịp Tết', aud: 'Thành viên', kind: 'Giảm giá', minQty: 0, minMoney: 0, val: '10%', giftQty: 1, per: 'Mỗi đơn', from: '2027-02-01', to: '2027-02-15', stack: false, days: 0, desc: '', state: 'Đang tắt', text: 'Giảm 10% (đến 15/2)' }];
 const DEMO_BCQT = [['Chọn tháng xem báo cáo (ô vàng):', '11/2026', '', '', '', '', ''], [], ['DOANH THU', '', 'LÃI GỘP', '', 'LÃI THUẦN', '', 'CP CHẤT LƯỢNG / DOANH THU'], ['532.000 đ', '', '458.676 đ', '', '458.676 đ', '', '0,0%'], ['Chưa có tháng trước', '', 'Chưa có tháng trước', '', 'Chưa có tháng trước', '', 'Tháng trước: 0,0%'], [], ['SO SÁNH'], ['CHỈ TIÊU', 'Tháng 11/2026', '% DOANH THU', 'Tháng 10/2026', '% DOANH THU', 'CHÊNH LỆCH', 'CHÊNH LỆCH %'], ['Doanh thu', '532.000', '100,0%', '0', '', '532.000', ''], ['Giá vốn: nguyên liệu đã dùng', '73.324', '13,8%', '0', '', '73.324', ''], ['LÃI GỘP', '458.676', '86,2%', '0', '', '458.676', ''], ['LÃI THUẦN', '458.676', '86,2%', '0', '', '458.676', ''], [], ['Số chai bán', '23', '', '0', '', '23', ''], ['Lãi thuần mỗi chai', '19.942', '', '', '', '19.942', ''], [], [], [], [], [], [], [], ['Lưu ý: giá vốn tạm tính theo nguyên liệu đã dùng nấu.']];
+const DEMO_MEMBERS = {};
 const DEMO_ORDERS = (() => {
   const t = Date.now(), L = (n, q) => ({ name: n, qty: q });
   return [
@@ -1694,7 +2144,7 @@ function renderOrders() {
   const shown = list.filter(ORD_FILTERS.find(x => x[0] === ORD.filter)[2]);
   if (ORD.list && !shown.length) kids.push(h('div', { class: 'blank' }, ORD.filter === 'new' ? 'Chưa có đơn mới.' : 'Không có đơn nào.'));
   shown.forEach(o => kids.push(orderCard(o)));
-  kids.push(h('div', { class: 'small', style: 'text-align:center;margin-top:16px;color:var(--muted);font-size:13px' }, ORD.at ? 'Cập nhật lúc ' + ordTime(ORD.at) + ', tự tải lại mỗi phút' : ''));
+  kids.push(h('div', { class: 'small', style: 'text-align:center;margin-top:16px;color:var(--muted);font-size:13px' }, ORD.at ? 'Cập nhật lúc ' + ordTime(ORD.at) + ', tự tải lại mỗi 10 giây' : ''));
   box.replaceChildren(...kids);
   if (ORD.focus) { const el = document.getElementById('o-' + ORD.focus); if (el) el.scrollIntoView({ block: 'center' }); ORD.focus = null; }
 }
@@ -1714,10 +2164,11 @@ function orderCard(o) {
   const canPay = ['Mới', 'Đã nhận'].includes(o.status) && unpaid && !o.paid;
   if (canPay) btns.push(btn(o.bank ? 'Đổi sang tiền mặt' : 'Đổi sang chuyển khoản', 'pay', false, { pay: o.bank ? 'cash' : 'bank' }));
   return h('div', { class: 'ocard ' + cls, id: 'o-' + o.code },
-    h('div', { class: 'hd' }, h('b', {}, o.code), h('span', { class: pill }, o.status), o.src === 'Tiệm lên đơn' ? h('span', { class: 'lbl' }, 'Tiệm lên đơn') : '', open ? h('span', { class: 'due num' }, '⏰ ' + ordTime(o.deliverAt)) : ''),
+    h('div', { class: 'hd' }, h('b', {}, o.code), h('span', { class: pill }, o.status), o.src !== 'Khách đặt' && o.src ? h('span', { class: 'lbl' }, o.src) : '', open ? h('span', { class: 'due num' }, '⏰ ' + ordTime(o.deliverAt)) : ''),
     h('div', { class: 'who' }, (o.name || 'Khách chưa ghi tên') + ' · ', h('a', { href: 'tel:' + o.phone }, o.phone), ''),
     h('div', { class: 'where' }, o.cc ? o.area + ', căn ' + o.place : o.place),
-    h('ul', {}, o.lines.map(l => h('li', {}, l.qty + '× ' + lineName({ name: l.name, group: 'BÁN HÀNG' })))),
+    h('ul', {}, o.lines.map(l => h('li', {}, (l.gift ? '🎁 ' : '') + l.qty + '× ' + lineName({ name: l.name, group: l.gift ? 'CHO TẶNG' : 'BÁN HÀNG' })))),
+    o.promo || o.la ? h('div', { class: 'promo' }, [o.promo ? 'Khuyến mãi: ' + o.promo : '', o.la ? 'Khách dùng ' + o.la.toLocaleString('vi-VN') + ' lá' : ''].filter(Boolean).join(' · ')) : '',
     o.note ? h('div', { class: 'memo' }, '“' + o.note + '”') : '',
     h('div', { class: 'omoney' }, h('span', { class: unpaid ? 'wait' : 'paid' }, (o.bank ? 'Chuyển khoản' : 'Tiền mặt') + ' · ' + (unpaid ? (o.money || 'chưa thu').toLowerCase() : 'đã thu')), h('b', { class: 'num' }, vnd(o.total))),
     showTick ? h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: !!ORD.paid[o.code], onchange: e => { ORD.paid[o.code] = e.target.checked; } }), 'Đã nhận đủ tiền') : '',
@@ -1825,7 +2276,7 @@ async function ratingShowDo(x) {
   } catch (e) { delete FB.busy[x.code]; showMsg('err', 'Mất kết nối. Chưa gửi được, thử lại.'); renderOrders(); toTop(); }
 }
 // Tự tải lại đơn mỗi phút khi app đang mở; mở lại app cũng tải ngay.
-setInterval(() => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible') loadOrders(true); }, 60000);
+setInterval(() => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible' && (S.tab === 'order' || Date.now() - ORD.at > 55000)) loadOrders(true); }, 10000);
 document.addEventListener('visibilitychange', () => { if (MODE === 'banhang' && S.data && document.visibilityState === 'visible' && Date.now() - ORD.at > 20000) loadOrders(true); });
 (() => { const q = new URLSearchParams(location.search).get('don'); if (q) { S.tab = 'order'; ORD.focus = q.toUpperCase(); history.replaceState(null, '', location.pathname); } })();
 
