@@ -1389,7 +1389,7 @@ function renderBcqt() {
 /* ================= KHUYẾN MÃI ================= */
 // Quản lý: nhập và sửa chương trình. Bán hàng: chỉ xem các chương trình đang chạy.
 let MK = { rows: null, products: [], error: null, busy: false, form: null, formErr: '', saving: false };
-const MK_AUDS = ['Toàn hệ thống', 'Thành viên', 'Khách mới'], MK_KINDS = ['Tặng món', 'Giảm giá', 'Miễn ship', 'Voucher'];
+const MK_AUDS = ['Toàn hệ thống', 'Thành viên', 'Khách mới'], MK_KINDS = ['Giảm giá', 'Miễn ship', 'Voucher'];
 const audShort = a => a === 'Toàn hệ thống' ? 'Mọi khách' : a;
 async function loadMk() {
   if (MK.busy) return; MK.busy = true;
@@ -1401,7 +1401,7 @@ async function loadMk() {
   MK.busy = false; if (S.tab === 'mkt') renderMkt(); else if (S.tab === 'sale' && !editing()) renderPosPromos();
 }
 const dmy = s => { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? Number(m[3]) + '/' + Number(m[2]) : ''; };
-function mkBlank() { return { row: 0, id: '', on: true, name: '', aud: 'Toàn hệ thống', kind: 'Tặng món', minQty: '', minMoney: '', val: '', giftQty: 1, per: 'Mỗi đơn', from: '', to: '', stack: true, days: 30, desc: '' }; }
+function mkBlank() { return { row: 0, id: '', on: true, name: '', aud: 'Toàn hệ thống', kind: 'Voucher', minQty: '', minMoney: '', val: '', giftQty: 1, per: 'Mỗi đơn', from: '', to: '', stack: true, days: 30, desc: '' }; }
 function renderMkt() {
   const box = $('mktBox'), edit = MODE === 'quanly';
   if (!MK.rows && !MK.error) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tải chương trình…')); loadMk(); return; }
