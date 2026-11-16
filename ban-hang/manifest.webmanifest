@@ -1,10 +1,10 @@
 {
  "name": "Sâmila Bán hàng",
- "short_name": "Sâmila Bán hàng",
+ "short_name": "Bán hàng",
  "start_url": "./",
  "display": "standalone",
  "background_color": "#EDF2EA",
- "theme_color": "#1E4D3A",
+ "theme_color": "#E8731A",
  "lang": "vi",
  "icons": [
   {
