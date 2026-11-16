@@ -304,6 +304,18 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 .cols button.zero{background:var(--line)}
 .axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
 .cap{font-size:14px;margin-bottom:10px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpis>div{background:var(--paper);border-radius:var(--r);padding:12px 14px}
+.kpis small{display:block;color:var(--muted);font-size:13px}
+.kpis b{display:block;font-size:20px;margin:2px 0;white-space:nowrap}
+.kpis .d{font-size:13px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;margin-bottom:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.mch{display:block;width:100%;height:auto;overflow:visible}
+.mch g[tabindex]{outline:none;cursor:pointer}
+.mch g[tabindex]:focus-visible rect.band{stroke:var(--green);stroke-width:1.5}
+.note2{color:var(--muted);font-size:13px;margin-top:10px}
+.stats.s2{margin-top:10px}
 .cap b{font-weight:700}
 .hbar{margin-top:12px}
 .hbar:first-child{margin-top:0}
@@ -438,6 +450,7 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
 
     <!-- BCQT -->
     <div id="tab-bcqt" hidden><div id="bcqtBox"></div></div>
+    <div id="tab-stats" hidden><div id="statsBox"></div></div>
 
     <!-- ĐƠN ONLINE -->
     <div id="tab-order" hidden><div id="ordBox"></div></div>
@@ -460,7 +473,8 @@ h2{margin:0 0 8px;font-size:15px;font-weight:600;color:var(--muted)}
     <button data-tab="sale"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v4l2 3v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10l2-3z"/><path d="M7 13h10"/></svg>Bán</button>
     <button data-tab="buy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.5 12h-11z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>Mua</button>
     <button data-tab="make"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2 11h20M9 7c0-1.5 1.5-1.5 1.5-3M14 7c0-1.5 1.5-1.5 1.5-3"/></svg>Nấu</button>
-    <button data-tab="bcqt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 15l3-3 2 2 3-4"/></svg>BCQT</button>
+    <button data-tab="bcqt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 15l3-3 2 2 3-4"/></svg>BCTC</button>
+    <button data-tab="stats"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 8-9"/><path d="M15 5h5v5"/></svg>Chỉ số</button>
     <button data-tab="cust"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Khách</button>
     <button data-tab="mkt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/></svg>Khuyến mãi</button>
     <button data-tab="order"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Đơn<span class="badge" id="ordBadge" hidden></span></button>
@@ -660,7 +674,7 @@ function suggestAmounts(make, cot, water) {
 
 /* ================= Trạng thái ================= */
 const MODE = 'quanly';   // 'quanly' = Sâmila Quản lý, 'banhang' = Sâmila Bán hàng (bản dựng tự thay dòng này)
-const TABS = MODE === 'banhang' ? ['sale', 'order', 'mkt', 'cust'] : ['home', 'buy', 'make', 'bcqt', 'mkt'];
+const TABS = MODE === 'banhang' ? ['sale', 'order', 'mkt', 'cust'] : ['home', 'bcqt', 'stats', 'buy', 'make', 'mkt'];
 const S = {
   cfg: store.get('sam.cfg', null), data: null, tab: TABS[0],
   at: null, saving: false, requestId: null,
@@ -672,7 +686,7 @@ const S = {
   cust: { q: '', edit: null, group: '', other: false, del: false }
 };
 const isDemo = () => S.cfg && S.cfg.url === 'demo';
-const TITLES = { home: 'Tổng quan', sale: 'Bán hàng', buy: 'Mua hàng', make: 'Nấu sâm', cust: 'Khách hàng', order: 'Đơn hàng', bcqt: 'Báo cáo quản trị', mkt: 'Khuyến mãi' };
+const TITLES = { home: 'Tổng quan', sale: 'Bán hàng', buy: 'Mua hàng', make: 'Nấu sâm', cust: 'Khách hàng', order: 'Đơn hàng', bcqt: 'Báo cáo tài chính', stats: 'Chỉ số', mkt: 'Khuyến mãi' };
 
 /* ================= Gọi web app ================= */
 async function api(body) {
@@ -744,7 +758,8 @@ async function demoApi(b) {
     return { ok: true, order: o, granted: b.register ? ['Chào mừng'] : [] };
   }
   if (b.action === 'orderCreate') { const qty0 = {}; b.items.forEach(i => { qty0[i.name] = { sell: i.qty, gift: 0 }; }); const c0 = calcOrder(DEMO.products, DEMO.tiers, qty0); const o = { code: 'SML' + Math.floor(10000 + Math.random() * 89999), at: Date.now(), status: 'Đã nhận', phone: b.phone, name: b.name, area: 'Bên ngoài', cc: b.area === 'cc', place: b.apt || b.addr, deliverAt: Date.now(), asap: true, lines: b.items, gross: c0.total + c0.discount, discount: c0.discount, la: 0, promo: '', total: c0.total, bank: b.pay === 'bank', money: b.paid ? 'Đã thanh toán' : 'Trả khi nhận hàng', note: '', zalo: false, sale: '', paid: 0, src: b.src || 'Tiệm lên đơn' }; DEMO_ORDERS.unshift(o); return { ok: true, order: o }; }
-  if (b.action === 'bcqt') return { ok: true, rows: DEMO_BCQT };
+  if (b.action === 'bcqt') return Object.assign({ ok: true }, JSON.parse(JSON.stringify(DEMO_FIN)));
+  if (b.action === 'stats') return Object.assign({ ok: true }, JSON.parse(JSON.stringify(DEMO_STATS)));
   if (b.action === 'marketing') return { ok: true, products: DEMO.products.map(x => x.name), rows: JSON.parse(JSON.stringify(DEMO_MK)) };
   if (b.action === 'marketingSave') {
     const p = Object.assign({}, b.p), i = DEMO_MK.findIndex(x => x.row === p.row && p.row);
@@ -863,7 +878,7 @@ function renderAll() {
   document.querySelectorAll('.nav button').forEach(b => b.dataset.tab === S.tab ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
   $('title').textContent = TITLES[S.tab];
   $('whenBtn').hidden = !entry || list; if (!entry || list) $('whenBox').hidden = true;
-  if (list) renderLedger(); else ({ home: renderHome, sale: renderSale, buy: renderBuy, make: renderMake, cust: renderCustList, order: renderOrders, bcqt: renderBcqt, mkt: renderMkt })[S.tab]();
+  if (list) renderLedger(); else ({ home: renderHome, sale: renderSale, buy: renderBuy, make: renderMake, cust: renderCustList, order: renderOrders, bcqt: renderBcqt, stats: renderStats, mkt: renderMkt })[S.tab]();
   renderBar();
 }
 function showMsg(kind, ...kids) {
@@ -1361,29 +1376,138 @@ async function posFinish() {
   } catch (e) { P.busy = false; showMsg('err', 'Mất kết nối. Chưa chốt được, thử lại.'); renderPosAct(); toTop(); }
 }
 
-/* ================= BCQT ================= */
-let BC = { rows: null, error: null, busy: false };
+/* ================= BCTC (tab BCQT) ================= */
+let BC = { data: null, error: null, busy: false, month: null };
 async function loadBcqt() {
   if (BC.busy) return; BC.busy = true;
-  try { const r = await api({ action: 'bcqt' }); if (r.ok) { BC.rows = r.rows; BC.error = null; } else BC.error = r.error === 'UNKNOWN_ACTION' ? ERR.UNKNOWN_ACTION() : (r.error === 'NO_SHEET' ? 'Chưa có sheet BÁO CÁO QUẢN TRỊ.' : errText(r)); }
+  try { const r = await api({ action: 'bcqt' }); if (r.ok) { BC.data = r; BC.error = null; } else BC.error = r.error === 'UNKNOWN_ACTION' ? ERR.UNKNOWN_ACTION() : (r.error === 'NO_SHEET' ? 'Chưa có sheet BÁO CÁO QUẢN TRỊ.' : errText(r)); }
   catch (e) { BC.error = 'Không tải được báo cáo. Kiểm tra mạng rồi thử lại.'; }
   BC.busy = false; if (S.tab === 'bcqt') renderBcqt();
 }
 function renderBcqt() {
-  const box = $('bcqtBox'), R = BC.rows;
-  if (!R && !BC.error) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tải báo cáo…')); loadBcqt(); return; }
-  if (BC.error) { box.replaceChildren(h('div', { class: 'note err', role: 'alert' }, BC.error), h('button', { class: 'link', onclick: () => { BC.error = null; BC.rows = null; renderBcqt(); } }, 'Thử lại')); return; }
-  const g = (i, c) => ((R[i] || [])[c] || '');
-  const kpi = [0, 2, 4, 6].map(c => h('div', { class: 'card', style: 'padding:12px 14px' }, h('small', { style: 'color:var(--muted)' }, g(2, c)), h('b', { class: 'num', style: 'display:block;font-size:20px;margin:2px 0' }, g(3, c)), h('small', { style: 'color:var(--muted)' }, g(4, c))));
-  const cols = [0, 1, 3, 5];
-  const rowEl = (i, head) => h('tr', {}, cols.map(c => h(head ? 'th' : 'td', { style: 'padding:6px 4px;text-align:' + (c ? 'right' : 'left') + (/LÃI/.test(g(i, 0)) ? ';font-weight:700' : '') }, g(i, c))));
-  const body = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].filter(i => g(i, 0)).map(i => rowEl(i));
+  const box = $('bcqtBox'), D = BC.data;
+  if (!D && !BC.error) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tải báo cáo…')); loadBcqt(); return; }
+  if (BC.error) { box.replaceChildren(h('div', { class: 'note err', role: 'alert' }, BC.error), h('button', { class: 'link', onclick: () => { BC.error = null; BC.data = null; renderBcqt(); } }, 'Thử lại')); return; }
+  const cur = curMonth(), act = x => x.rev || x.nl || x.bb || x.cpbh || x.cpcl;
+  const months = D.months.filter(x => act(x) || x.m === cur).map(x => x.m).sort().reverse();
+  const mk = months.includes(BC.month) ? BC.month : (months.includes(cur) ? cur : months[0]);
+  const x = D.months.find(y => y.m === mk) || { rev: 0, nl: 0, bb: 0, gop: 0, cpbh: 0, cpcl: 0, thuan: 0, gh: 0, qc: 0, kh: 0, ht: 0, bottles: 0 };
+  const cf = (D.cash || []).find(y => y.m === mk), hd = D.head;
+  const row = (label, v, pct, sum) => h('div', { class: 'trow' + (sum ? ' sum' : '') }, h('span', {}, label), h('span', { class: 'r num' }, h('b', {}, vnd(v)), pct ? h('small', {}, pct) : ''));
+  const pr = v => pctTxt(v, x.rev);
+  const kpi = (l, v, sub) => h('div', {}, h('small', {}, l), h('b', { class: 'num' }, v), h('small', { class: 'd' }, sub));
   box.replaceChildren(
-    h('p', { class: 'small', style: 'margin:0 0 10px;color:var(--muted)' }, g(0, 0).replace(':', '') + ': ' + g(0, 1) + '. Đổi tháng ở ô vàng trong sheet BÁO CÁO QUẢN TRỊ.'),
-    h('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' }, kpi),
-    h('table', { style: 'width:100%;border-collapse:collapse;margin-top:14px;font-size:14px' }, h('thead', {}, rowEl(7, true)), h('tbody', {}, body)),
-    g(22, 0) ? h('p', { class: 'small', style: 'color:var(--muted);margin-top:12px' }, g(22, 0)) : '',
-    h('button', { class: 'link', style: 'margin-top:10px', onclick: () => { BC.rows = null; renderBcqt(); } }, 'Tải lại'));
+    h('section', {}, h('div', { class: 'chips' }, months.map(m => chip(monthName(m), m === mk, () => { BC.month = m; renderBcqt(); })))),
+    h('section', {}, h('div', { class: 'kpis' },
+      kpi('Doanh thu', vnd(x.rev), x.bottles + ' chai bán'),
+      kpi('Lãi gộp', vnd(x.gop), pr(x.gop) ? pr(x.gop) + ' doanh thu' : 'chưa có doanh thu'),
+      kpi('Lãi thuần', vnd(x.thuan), pr(x.thuan) ? pr(x.thuan) + ' doanh thu' : 'chưa có doanh thu'),
+      kpi('Lãi thuần mỗi chai', x.bottles ? vnd(x.thuan / x.bottles) : '—', 'thu ' + (x.bottles ? vnd(x.rev / x.bottles) : '—') + ' mỗi chai'))),
+    secEl('Kết quả kinh doanh ' + monthName(mk).toLowerCase(), h('div', { class: 'panel' },
+      row('Doanh thu', x.rev, x.rev ? '100%' : ''),
+      row('Giá vốn: nguyên liệu đã dùng', x.nl, pr(x.nl)),
+      row('Giá vốn: bao bì', x.bb, pr(x.bb)),
+      row('Lãi gộp', x.gop, pr(x.gop), true),
+      row('Chi phí giao hàng', x.gh, pr(x.gh)),
+      row('Chi phí quảng cáo', x.qc, pr(x.qc)),
+      row('Chi phí khác (điện, gas, nước…)', x.kh, pr(x.kh)),
+      row('Chi phí chất lượng: hoàn tiền', x.ht, pr(x.ht)),
+      row('Lãi thuần', x.thuan, pr(x.thuan), true))),
+    cf ? secEl('Dòng tiền ' + monthName(mk).toLowerCase(), h('div', { class: 'panel' },
+      row('Thu tiền bán hàng', cf.thu), row('Chi tiền mặt, chuyển khoản', cf.chi),
+      cf.nomoi ? row('Mua chịu Spaylater (nợ mới)', cf.nomoi) : '', cf.tra ? row('Trả Spaylater', cf.tra) : '',
+      row('Dòng tiền ròng', cf.rong, '', true), row('Tiền cuối tháng', cf.cuoi), row('Nợ Spaylater cuối tháng', cf.no),
+      row('Tiền thực còn sau khi trả hết nợ', cf.thuc, '', true))) : '',
+    hd ? secEl('Vốn và nợ đến hôm nay', h('div', { class: 'panel' },
+      row('Vốn đang nằm trong kho', hd.vonKho), row('Nợ Spaylater còn lại', hd.noHienTai),
+      row('Lãi lỗ cộng dồn', hd.laiLoCongDon), row('Tiền thực còn sau khi trả hết nợ', hd.tienThuc, '', true))) : '',
+    h('p', { class: 'note2' }, 'Giá vốn tạm tính theo nguyên liệu đã dùng nấu, nên đã gồm cả chai tặng và hao hụt. Dụng cụ (nhóm DC) không tính vào chi phí. Hoàn tiền tính là chi phí chất lượng, không trừ doanh thu.'),
+    h('button', { class: 'link', style: 'margin-top:10px', onclick: () => { BC.data = null; renderBcqt(); } }, 'Tải lại'));
+}
+
+/* ================= Chỉ số (tăng trưởng) ================= */
+let ST = { data: null, fin: null, error: null, busy: false, month: null };
+async function loadStats() {
+  if (ST.busy) return; ST.busy = true;
+  try {
+    const [a, b] = await Promise.all([api({ action: 'stats' }), api({ action: 'bcqt' })]);
+    if (a.ok) { ST.data = a; ST.error = null; } else ST.error = a.error === 'UNKNOWN_ACTION' ? ERR.UNKNOWN_ACTION() : errText(a);
+    ST.fin = b && b.ok ? Object.fromEntries(b.months.map(x => [x.m, x.thuan])) : null;
+  } catch (e) { ST.error = 'Không tải được chỉ số. Kiểm tra mạng rồi thử lại.'; }
+  ST.busy = false; if (S.tab === 'stats') renderStats();
+}
+const SVGNS = 'http://www.w3.org/2000/svg';
+const sv = (tag, attrs = {}, ...kids) => { const e = document.createElementNS(SVGNS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); kids.forEach(c => e.append(c)); return e; };
+const CH1 = '#1F8A5B', CH2 = '#7A5AA8';
+// Biểu đồ cột theo tháng. series = [{name, color, values}]. Chạm, rê hoặc tab vào một tháng để xem số.
+function mchart(title, labels, series, fmt) {
+  const n = labels.length, W = 360, H = 150, pl = 4, pr = 4, pt = 10, pb = 22, k = series.length;
+  const vals = series.flatMap(x => x.values), hi = Math.max(1, ...vals), lo = Math.min(0, ...vals);
+  const y = v => pt + (H - pt - pb) * (hi - v) / (hi - lo), y0 = y(0);
+  const gw = (W - pl - pr) / n, bw = Math.min(26, (gw * 0.72 - (k - 1) * 2) / k);
+  const text = i => 'Tháng ' + labels[i] + ': ' + series.map(x => (k > 1 ? x.name + ' ' : '') + fmt(x.values[i])).join(', ');
+  let sel = n - 1;
+  const cap = h('div', { class: 'cap num' }), bands = [];
+  const g = sv('g');
+  labels.forEach((lb, i) => {
+    const gx = pl + gw * i, cx = gx + gw / 2, bx0 = cx - (k * bw + (k - 1) * 2) / 2;
+    const band = sv('rect', { class: 'band', x: gx, y: 0, width: gw, height: H - pb, rx: 4, fill: 'transparent' });
+    bands.push(band);
+    const gi = sv('g', { tabindex: 0, role: 'button', 'aria-label': text(i) }, band);
+    series.forEach((x, j) => {
+      const v = x.values[i], yy = y(v), top = Math.min(yy, y0), ht = Math.max(2, Math.abs(yy - y0));
+      gi.append(sv('rect', { x: bx0 + j * (bw + 2), y: v < 0 ? y0 : top, width: bw, height: ht, rx: 3, fill: v === 0 ? '#D3DDD4' : x.color }));
+    });
+    if (n <= 7 || (n - 1 - i) % 2 === 0) gi.append(sv('text', { x: cx, y: H - 7, 'text-anchor': 'middle', 'font-size': 10.5, fill: '#5E6F65' }, document.createTextNode(lb)));
+    const pick = () => { sel = i; paint(); };
+    gi.addEventListener('pointerenter', pick); gi.addEventListener('click', pick); gi.addEventListener('focus', pick);
+    g.append(gi);
+  });
+  const paint = () => { cap.replaceChildren(text(sel)); bands.forEach((b, i) => b.setAttribute('fill', i === sel ? '#DDE9DF' : 'transparent')); };
+  paint();
+  const svg = sv('svg', { class: 'mch', viewBox: '0 0 ' + W + ' ' + H, role: 'group', 'aria-label': title });
+  svg.append(sv('line', { x1: pl, x2: W - pr, y1: y0, y2: y0, stroke: '#D3DDD4', 'stroke-width': 1 }), g);
+  return secEl(title, h('div', { class: 'panel' },
+    k > 1 ? h('div', { class: 'legend' }, series.map(x => h('span', {}, h('i', { style: 'background:' + x.color }), x.name))) : '',
+    cap, svg));
+}
+function renderStats() {
+  const box = $('statsBox'), D = ST.data;
+  if (!D && !ST.error) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tính chỉ số…')); loadStats(); return; }
+  if (ST.error) { box.replaceChildren(h('div', { class: 'note err', role: 'alert' }, ST.error), h('button', { class: 'link', onclick: () => { ST.error = null; ST.data = null; renderStats(); } }, 'Thử lại')); return; }
+  let ms = D.months.slice();
+  const k0 = ms.findIndex(x => x.orders || x.cost || x.newMem || x.newCust);
+  ms = k0 > 0 ? ms.slice(k0) : ms;
+  const fin = ST.fin || {}, thuan = m => fin[m] || 0;
+  const lb = ms.map(x => Number(x.m.slice(5)) + '/' + x.m.slice(2, 4));
+  const cur = ms.find(x => x.m === D.today) || ms[ms.length - 1];
+  const pd = new Date(Number(cur.m.slice(0, 4)), Number(cur.m.slice(5)) - 2, 1), pk = pd.getFullYear() + '-' + p2(pd.getMonth() + 1);
+  const prev = ms.find(x => x.m === pk) || null;
+  const tile = (l, c, p) => {
+    const d = !prev || !p ? 'chưa có tháng trước' : (c >= p ? '▲ +' : '▼ ') + Math.round((c - p) / Math.abs(p) * 100) + '% so tháng trước';
+    return { l, c, d };
+  };
+  const tiles = [
+    tile('Doanh thu', cur.rev, prev && prev.rev), tile('Thực thu', cur.paid, prev && prev.paid), tile('Thực chi mua hàng', cur.cost, prev && prev.cost),
+    ST.fin ? tile('Lãi thuần', thuan(cur.m), prev && thuan(prev.m)) : null, tile('Số chai', cur.bottles, prev && prev.bottles)
+  ].filter(Boolean);
+  const sm = ms.slice().reverse().slice(0, 6), mk = sm.some(x => x.m === ST.month) ? ST.month : cur.m, mm = ms.find(x => x.m === mk) || cur;
+  const cell = (v, l) => h('div', {}, h('b', { class: 'num' }, v), h('small', {}, l));
+  box.replaceChildren(
+    secEl('So với tháng trước', h('div', { class: 'kpis' }, tiles.map(t => h('div', {}, h('small', {}, t.l), h('b', { class: 'num' }, t.l === 'Số chai' ? String(t.c) : vnd(t.c)), h('small', { class: 'd' }, t.d)))),
+      h('p', { class: 'note2' }, 'Tháng này tính đến hôm nay, tháng trước tính đủ tháng.')),
+    mchart('Doanh thu theo tháng', lb, [{ name: 'Doanh thu', color: CH1, values: ms.map(x => x.rev) }], vnd),
+    mchart('Thực thu và thực chi theo tháng', lb, [{ name: 'Thực thu', color: CH1, values: ms.map(x => x.paid) }, { name: 'Thực chi', color: CH2, values: ms.map(x => x.cost) }], vnd),
+    ST.fin ? mchart('Lãi thuần theo tháng', lb, [{ name: 'Lãi thuần', color: CH1, values: ms.map(x => thuan(x.m)) }], vnd) : '',
+    mchart('Số chai bán theo tháng', lb, [{ name: 'Số chai', color: CH1, values: ms.map(x => x.bottles) }], v => v + ' chai'),
+    mchart('Trung bình mỗi đơn', lb, [{ name: 'Mỗi đơn', color: CH1, values: ms.map(x => (x.orders ? Math.round(x.rev / x.orders) : 0)) }], vnd),
+    mchart('Khách mới và thành viên mới', lb, [{ name: 'Khách mới', color: CH1, values: ms.map(x => x.newCust) }, { name: 'Thành viên đăng ký mới', color: CH2, values: ms.map(x => x.newMem) }], v => String(v)),
+    secEl('Khách hàng ' + monthName(mk).toLowerCase(),
+      h('div', { class: 'chips', style: 'margin-bottom:10px' }, sm.map(x => chip(monthName(x.m), x.m === mk, () => { ST.month = x.m; renderStats(); }))),
+      h('div', { class: 'stats' }, cell(D.members == null ? '—' : String(D.members), 'thành viên hiện tại'), cell(String(mm.newMem), 'thành viên đăng ký mới'), cell(String(mm.newCust), 'khách mới')),
+      h('div', { class: 'panel', style: 'margin-top:10px' }, h('h2', { style: 'margin:0 0 8px;font-size:15px' }, 'Khách mua nhiều'), mm.top.length ? mm.top.map(c => h('div', { class: 'trow' },
+        h('span', {}, c.name + (c.apt ? ' (' + c.apt + ')' : '')), h('span', { class: 'r num' }, h('b', {}, vnd(c.spent)), h('small', {}, c.orders + ' đơn, ' + pctTxt(c.spent, mm.rev))))) : h('div', { class: 'blank' }, 'Chưa có khách nào mua trong tháng này.'))),
+    h('button', { class: 'link', style: 'margin-top:10px', onclick: () => { ST.data = null; renderStats(); } }, 'Tải lại'));
 }
 
 /* ================= KHUYẾN MÃI ================= */
@@ -1917,31 +2041,36 @@ function daySeries(R, period) {
   for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) { const k = localIso(d).slice(0, 10); out.push({ day: k, revenue: map[k] || 0 }); }
   return out.slice(-62);
 }
+const secEl = (title, ...kids) => h('section', {}, h('h2', {}, title), kids);
+const pctTxt = (v, total) => (total ? (v / total * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + '%' : '');
 function renderHome() {
   const period = S.period || (S.period = curMonth()), R = S.report[period], box = $('tab-home');
   if (!R) loadReport(period);
   if (!R || R.loading) { box.replaceChildren(h('div', { class: 'blank' }, 'Đang tính số liệu từ sheet…')); return; }
   if (R.error) { box.replaceChildren(h('div', { class: 'note err' }, R.error)); return; }
-  const sec = (title, ...kids) => h('section', {}, h('h2', {}, title), kids);
+  const sec = secEl;
   const months = [...new Set([curMonth(), ...R.months])].sort().reverse();
-  const net = R.sales.paid - R.cost, series = daySeries(R, period), max = Math.max(1, ...series.map(d => d.revenue));
+  const series = daySeries(R, period), max = Math.max(1, ...series.map(d => d.revenue));
   const best = series.reduce((a, d) => (d.revenue > (a ? a.revenue : 0) ? d : a), null);
   const sel = series.find(d => d.day === S.day) || null;
-  const topQty = Math.max(1, ...R.products.map(p => p.qty));
-  const stockValue = R.stock.reduce((s, x) => s + (x.value || 0), 0);
+  const avg = R.sales.orders ? R.sales.revenue / R.sales.orders : 0;
+  const liters = R.make.reduce((t, m) => t + (m.out || 0), 0);
+  const stockValue = R.stock.reduce((t, x) => t + (x.value || 0), 0);
+  const sold = new Set(R.products.map(p => p.name));
+  const all = R.products.concat((R.catalog || []).filter(n => !sold.has(n)).map(n => ({ name: n, qty: 0, revenue: 0 })));
+  const top = R.products.slice(0, 5), slow = all.slice(top.length).slice(-3).reverse();
+  const topQty = Math.max(1, ...all.map(p => p.qty)), payTotal = R.pays ? R.pays.reduce((t, x) => t + x.paid, 0) : 0;
+  const prodRow = p => { const s2 = splitName(p.name); return h('div', { class: 'hbar' },
+    h('div', { class: 't' }, h('span', {}, s2.base + ' ' + s2.rest), h('span', { class: 'num' }, p.qty + ' chai' + (p.revenue ? ', ' + vnd(p.revenue) + ' (' + pctTxt(p.revenue, R.sales.revenue) + ')' : ''))),
+    h('div', { class: 'b', style: 'width:' + p.qty / topQty * 100 + '%' })); };
+  const cell = (v, l) => h('div', {}, h('b', { class: 'num' }, v), h('small', {}, l));
   box.replaceChildren(
     healthPanel(),
-    sec('Hôm nay', h('div', { class: 'stats' },
-      h('div', {}, h('b', { class: 'num' }, String(R.today.bottles)), h('small', {}, 'chai')),
-      h('div', {}, h('b', { class: 'num' }, String(R.today.orders)), h('small', {}, 'đơn')),
-      h('div', {}, h('b', { class: 'num' }, vnd(R.today.paid)), h('small', {}, 'thực thu')))),
+    sec('Hôm nay', h('div', { class: 'stats' }, cell(String(R.today.bottles), 'chai'), cell(String(R.today.orders), 'đơn'), cell(vnd(R.today.paid), 'thực thu'))),
     h('section', {}, h('div', { class: 'chips' }, months.concat('all').map(m => chip(monthName(m), m === period, () => { S.period = m; S.day = null; renderHome(); })))),
-    h('section', {}, h('div', { class: 'money' },
-      h('small', {}, 'Thực thu ' + monthName(period).toLowerCase()), h('div', { class: 'big num' }, vnd(R.sales.paid)),
-      h('div', { class: 'two' },
-        h('div', {}, h('small', {}, 'Thực chi mua hàng'), h('b', { class: 'num' }, vnd(R.cost))),
-        h('div', {}, h('small', {}, net >= 0 ? 'Thu nhiều hơn chi' : 'Chi nhiều hơn thu'), h('b', { class: 'num' }, vnd(Math.abs(net))))),
-      h('div', { class: 'foot num' }, 'Doanh thu ' + vnd(R.sales.revenue) + ', ' + R.sales.bottles + ' chai trong ' + R.sales.orders + ' đơn' + (R.sales.gifts ? ', trong đó tặng ' + R.sales.gifts + ' chai' : '') + '.'))),
+    sec('Bán hàng ' + monthName(period).toLowerCase(),
+      h('div', { class: 'stats' }, cell(vnd(R.sales.revenue), 'doanh thu'), cell(String(R.sales.bottles), 'chai'), cell(String(R.sales.orders), 'đơn')),
+      h('div', { class: 'stats s2' }, cell(vnd(avg), 'trung bình mỗi đơn'), cell(String(R.sales.gifts || 0), 'chai tặng'), cell(qfmt(liters), 'lít cốt đã nấu'))),
     sec('Doanh thu theo ngày', h('div', { class: 'panel' }, series.length ? [
       h('div', { class: 'cap num' }, sel ? ['Ngày ' + dm(sel.day) + ': ', h('b', {}, vnd(sel.revenue))] : best ? ['Cao nhất ngày ' + dm(best.day) + ': ', h('b', {}, vnd(best.revenue)), '. Chạm vào cột để xem từng ngày.'] : 'Chưa bán được ngày nào trong kỳ này.'),
       h('div', { class: 'cols', role: 'group', 'aria-label': 'Doanh thu từng ngày' }, series.map(d => h('button', {
@@ -1949,20 +2078,19 @@ function renderHome() {
         'aria-label': dm(d.day) + ': ' + vnd(d.revenue), 'aria-pressed': String(d.day === S.day), onclick: () => { S.day = d.day; renderHome(); } }))),
       h('div', { class: 'axis num' }, h('span', {}, dm(series[0].day)), h('span', {}, dm(series[series.length - 1].day)))
     ] : h('div', { class: 'blank' }, 'Chưa có đơn bán nào.'))),
-    sec('Món bán chạy', h('div', { class: 'panel' }, R.products.length ? R.products.map(p => { const s = splitName(p.name); return h('div', { class: 'hbar' },
-      h('div', { class: 't' }, h('span', {}, s.base + ' ' + s.rest), h('span', { class: 'num' }, p.qty + ' chai, ' + vnd(p.revenue))),
-      h('div', { class: 'b', style: 'width:' + p.qty / topQty * 100 + '%' })); }) : h('div', { class: 'blank' }, 'Chưa có món nào bán ra trong kỳ này.'))),
-    R.customers.length ? sec('Khách mua nhiều', h('div', { class: 'panel' }, R.customers.map(c => h('div', { class: 'trow' },
-      h('span', {}, c.name), h('span', { class: 'r num' }, h('b', {}, vnd(c.spent)), h('small', {}, c.orders + ' đơn')))))) : '',
+    sec('Món bán chạy', h('div', { class: 'panel' }, top.length ? top.map(prodRow) : h('div', { class: 'blank' }, 'Chưa có món nào bán ra trong kỳ này.'))),
+    slow.length ? sec('Món bán chậm', h('div', { class: 'panel' }, slow.map(prodRow))) : '',
+    R.pays && R.pays.length ? sec('Thực thu theo phương thức thanh toán', h('div', { class: 'panel' }, R.pays.map(x => h('div', { class: 'trow' },
+      h('span', {}, x.name), h('span', { class: 'r num' }, h('b', {}, vnd(x.paid)), h('small', {}, x.orders + ' đơn, ' + pctTxt(x.paid, payTotal))))))) : '',
     sec('Kho nguyên liệu hiện tại', h('div', { class: 'panel' }, R.stock.length ? [
       ...R.stock.map(x => h('div', { class: 'trow' + (x.left != null && x.left <= 0 ? ' low' : '') },
-        h('span', {}, x.name), h('span', { class: 'r num' }, h('b', {}, x.left != null ? (x.left <= 0 ? 'Hết, ' : '') + qfmt(x.left) + ' g' : 'không rõ'), h('small', {}, x.value ? 'trị giá ' + vnd(x.value) : 'chưa có giá mua')))),
+        h('span', {}, x.name), h('span', { class: 'r num' }, h('b', {}, x.left != null ? (x.left <= 0 ? 'Hết, ' : '') + qfmt(x.left) + ' g' : 'không rõ'),
+          h('small', {}, (x.bought && x.left != null ? 'còn ' + Math.max(0, Math.round(x.left / x.bought * 100)) + '% so với đã nhập' : 'chưa có lượng nhập') + (x.value ? ', trị giá ' + vnd(x.value) : ''))))),
       h('div', { class: 'trow sum' }, h('span', {}, 'Tổng trị giá tồn'), h('span', { class: 'r num' }, vnd(stockValue)))
     ] : h('div', { class: 'blank' }, 'Sheet KHO NVL chưa có dòng nào.'))),
-    R.make.length ? sec('Đã nấu', h('div', { class: 'panel' }, R.make.map(m => h('div', { class: 'trow' },
-      h('span', {}, m.cot), h('span', { class: 'r num' }, h('b', {}, qfmt(m.out) + ' lít cốt'), h('small', {}, m.batches + ' mẻ, ' + qfmt(m.water) + ' lít nước')))))) : '',
-    R.byGroup.length ? sec('Chi theo nhóm', h('div', { class: 'panel' }, R.byGroup.map(g => { const n = (S.data.buy.groups.find(x => x.code === g.code) || {}).name || g.code;
-      return h('div', { class: 'trow' }, h('span', {}, n), h('span', { class: 'r num' }, vnd(g.cost))); }))) : '');
+    R.make.length ? sec('Đã nấu', h('div', { class: 'panel' }, [...R.make.map(m => h('div', { class: 'trow' },
+      h('span', {}, m.cot), h('span', { class: 'r num' }, h('b', {}, qfmt(m.out) + ' lít cốt'), h('small', {}, m.batches + ' mẻ, ' + qfmt(m.water) + ' lít nước' + (m.water ? ', thu hồi ' + Math.round(m.out / m.water * 100) + '%' : ''))))),
+      h('div', { class: 'trow sum' }, h('span', {}, 'Tổng lít cốt'), h('span', { class: 'r num' }, qfmt(liters) + ' lít'))])) : '');
 }
 
 function healthPanel() {
@@ -2049,8 +2177,10 @@ const DEMO_REPORT = {
   days: [4, 5, 8, 11, 12, 13].filter(d => d <= Number(TODAY.slice(8))).map((d, i) => ({ day: TODAY.slice(0, 8) + p2(d), revenue: [36000, 28000, 88000, 52000, 52000, 64000][i] })),
   products: [{ name: 'Sâm mía lau bịch / chai / 500ml', qty: 6, revenue: 160000 }, { name: 'Sâm hoa cúc / chai / 330ml', qty: 5, revenue: 72000 }, { name: 'Sâm mía lau bịch / chai / 330ml', qty: 2, revenue: 36000 }],
   customers: [{ code: 'x', name: 'Nguyễn Ngọc', orders: 3, spent: 124000 }, { code: 'y', name: 'Lê Trúc', orders: 2, spent: 80000 }],
+  pays: [{ name: 'Tiền mặt', orders: 4, paid: 150000 }, { name: 'Momo', orders: 2, paid: 116000 }],
+  catalog: ['Sâm hoa cúc / chai / 330ml', 'Sâm hoa cúc / chai / 500ml', 'Sâm mía lau / chai / 330ml', 'Sâm mía lau / chai / 500ml', 'Sâm mía lau bịch / chai / 330ml', 'Sâm mía lau bịch / chai / 500ml', 'Sâm hoa cúc bịch / chai / 500ml'],
   make: [{ cot: 'Sâm hoa cúc', batches: 3, water: 7.5, out: 5.1 }, { cot: 'Sâm mía lau', batches: 3, water: 7.5, out: 6.1 }, { cot: 'Siro', batches: 1, water: 0.5, out: 0.5 }],
-  stock: Object.entries(DEMO.make.stock).map(([name, left]) => ({ name, left, value: { 'Mía': 1200, 'Kỷ tử': 163326, 'Nhãn nhục': 119776, 'Thục địa': 70115, 'Lá dứa': 7600, 'Rễ tranh': 21409, 'Bịch sâm mía lau': 90000 }[name] || null }))
+  stock: Object.entries(DEMO.make.stock).map(([name, left]) => ({ name, left, bought: left ? left * 1.25 : 1000, value: { 'Mía': 1200, 'Kỷ tử': 163326, 'Nhãn nhục': 119776, 'Thục địa': 70115, 'Lá dứa': 7600, 'Rễ tranh': 21409, 'Bịch sâm mía lau': 90000 }[name] || null }))
 };
 const DEMO_PRICES = DEMO.products.map((p, i) => ({ row: 3 + i, name: p.name, price: p.price, active: true }))
   .concat([{ row: 7, name: 'Sâm hoa cúc / ly / 500ml', price: null, active: false }, { row: 8, name: 'Sâm mía lau / chai / 330ml', price: 19000, active: false }]);
@@ -2078,7 +2208,20 @@ $('whenNow').addEventListener('click', () => setWhen(null));
 const DEMO_MK = [{ row: 2, id: 'KM01', on: true, name: 'Mua từ 1 chai tặng 1 chai 330ml', aud: 'Toàn hệ thống', kind: 'Tặng món', minQty: 1, minMoney: 0, val: 'Sâm mía lau / chai / 330ml', giftQty: 1, per: 'Mỗi đơn', from: '', to: '2026-11-30', stack: true, days: 0, desc: '', state: '', text: 'Tặng 1 Sâm mía lau 330ml khi mua từ 1 chai (đến 30/11)' },
   { row: 3, id: 'KM02', on: true, name: 'Chào mừng thành viên mới', aud: 'Khách mới', kind: 'Voucher', minQty: 0, minMoney: 0, val: '5000', giftQty: 1, per: 'Mỗi đơn', from: '', to: '', stack: true, days: 30, desc: '', state: '', text: 'Voucher giảm 5.000đ' },
   { row: 4, id: 'KM03', on: false, name: 'Giảm 10% dịp Tết', aud: 'Thành viên', kind: 'Giảm giá', minQty: 0, minMoney: 0, val: '10%', giftQty: 1, per: 'Mỗi đơn', from: '2027-02-01', to: '2027-02-15', stack: false, days: 0, desc: '', state: 'Đang tắt', text: 'Giảm 10% (đến 15/2)' }];
-const DEMO_BCQT = [['Chọn tháng xem báo cáo (ô vàng):', '11/2026', '', '', '', '', ''], [], ['DOANH THU', '', 'LÃI GỘP', '', 'LÃI THUẦN', '', 'CP CHẤT LƯỢNG / DOANH THU'], ['532.000 đ', '', '458.676 đ', '', '458.676 đ', '', '0,0%'], ['Chưa có tháng trước', '', 'Chưa có tháng trước', '', 'Chưa có tháng trước', '', 'Tháng trước: 0,0%'], [], ['SO SÁNH'], ['CHỈ TIÊU', 'Tháng 11/2026', '% DOANH THU', 'Tháng 10/2026', '% DOANH THU', 'CHÊNH LỆCH', 'CHÊNH LỆCH %'], ['Doanh thu', '532.000', '100,0%', '0', '', '532.000', ''], ['Giá vốn: nguyên liệu đã dùng', '73.324', '13,8%', '0', '', '73.324', ''], ['LÃI GỘP', '458.676', '86,2%', '0', '', '458.676', ''], ['LÃI THUẦN', '458.676', '86,2%', '0', '', '458.676', ''], [], ['Số chai bán', '23', '', '0', '', '23', ''], ['Lãi thuần mỗi chai', '19.942', '', '', '', '19.942', ''], [], [], [], [], [], [], [], ['Lưu ý: giá vốn tạm tính theo nguyên liệu đã dùng nấu.']];
+const DEMO_FIN = {
+  months: [{ m: '2026-09', rev: 0, nl: 0, bb: 0, gop: 0, cpbh: 0, cpcl: 0, thuan: 0, gh: 0, qc: 0, kh: 0, ht: 0, bottles: 0 },
+    { m: '2026-10', rev: 310000, nl: 52000, bb: 6000, gop: 252000, cpbh: 20000, cpcl: 0, thuan: 232000, gh: 12000, qc: 8000, kh: 0, ht: 0, bottles: 19 },
+    { m: TODAY.slice(0, 7), rev: 532000, nl: 73324, bb: 0, gop: 458676, cpbh: 30000, cpcl: 5000, thuan: 423676, gh: 20000, qc: 0, kh: 10000, ht: 5000, bottles: 23 }],
+  cash: [{ m: TODAY.slice(0, 7), thu: 560000, chi: 210000, nomoi: 0, tra: 0, rong: 350000, cuoi: 600000, no: 361200, thuc: 238800 }],
+  head: { vonKho: 497876, noHienTai: 361200, laiLoCongDon: 655676, tienThuc: 238800 }
+};
+const DEMO_STATS = {
+  today: TODAY.slice(0, 7), members: 7,
+  months: [{ m: '2026-09', orders: 3, bottles: 6, rev: 120000, paid: 120000, cost: 90000, newCust: 3, newMem: 0, top: [] },
+    { m: '2026-10', orders: 11, bottles: 19, rev: 310000, paid: 300000, cost: 280000, newCust: 6, newMem: 1, top: [{ name: 'Lê Trúc', apt: 'B1530', orders: 3, spent: 96000 }] },
+    { m: TODAY.slice(0, 7), orders: 14, bottles: 23, rev: 532000, paid: 560000, cost: 210000, newCust: 5, newMem: 4,
+      top: [{ name: 'Nguyễn Ngọc', apt: 'A0605', orders: 3, spent: 124000 }, { name: 'Lê Trúc', apt: 'B1530', orders: 2, spent: 80000 }] }]
+};
 const DEMO_MEMBERS = {};
 const DEMO_ORDERS = (() => {
   const t = Date.now(), L = (n, q) => ({ name: n, qty: q });
