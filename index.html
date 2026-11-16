@@ -623,7 +623,7 @@ function suggestAmounts(make, cot, water) {
 }
 
 /* ================= Trạng thái ================= */
-const MODE = 'banhang';   // 'quanly' = Sâmila Quản lý, 'banhang' = Sâmila Bán hàng (bản dựng tự thay dòng này)
+const MODE = 'quanly';   // 'quanly' = Sâmila Quản lý, 'banhang' = Sâmila Bán hàng (bản dựng tự thay dòng này)
 const TABS = MODE === 'banhang' ? ['sale', 'order', 'cust'] : ['home', 'buy', 'make', 'bcqt'];
 const S = {
   cfg: store.get('sam.cfg', null), data: null, tab: TABS[0],
