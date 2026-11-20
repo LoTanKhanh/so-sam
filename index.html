@@ -2181,8 +2181,7 @@ function goalPanel(g) {
     bar('Số chai bán cả tháng', a.bottles, t.bottlesMonth, v => Math.round(v) + ' chai'),
     bar('Lãi gộp mỗi ngày', per(a.gop), t.gopDay, vnd),
     bar('Số chai bán mỗi ngày', per(a.bottles), t.bottlesDay, v => n0(v) + ' chai'),
-    bar('Số đơn mỗi ngày', per(a.orders), t.ordersDay, v => n0(v) + ' đơn'),
-    h('div', { class: 'cap' }, 'Mục tiêu mỗi ngày: ' + t.ordersDay + ' đơn, ' + t.bottlesDay + ' chai, ' + vnd(t.gopDay) + ' lãi gộp (tháng ' + t.days + ' ngày). Số mỗi ngày là trung bình ' + (d ? d + ' ngày đã qua' : 'chưa có ngày nào') + ' của tháng.')));
+    h('div', { class: 'cap' }, 'Mục tiêu mỗi ngày: ' + t.bottlesDay + ' chai, ' + vnd(t.gopDay) + ' lãi gộp (tháng ' + t.days + ' ngày). Số mỗi ngày là trung bình ' + (d ? d + ' ngày đã qua' : 'chưa có ngày nào') + ' của tháng.')));
 }
 
 // Lít bán so với lít nấu: hai thanh chồng lên nhau, thanh dài nhất của mỗi dòng giãn hết chiều ngang.
