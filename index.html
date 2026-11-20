@@ -2125,6 +2125,7 @@ function renderHome() {
   const cell = (v, l) => h('div', {}, h('b', { class: 'num' }, v), h('small', {}, l));
   box.replaceChildren(
     healthPanel(),
+    goalPanel(R.goal),
     sec('Hôm nay', h('div', { class: 'stats' }, cell(String(R.today.bottles), 'chai'), cell(String(R.today.orders), 'đơn'), cell(vnd(R.today.paid), 'thực thu'))),
     h('section', {}, h('div', { class: 'chips' }, months.concat('all').map(m => chip(monthName(m), m === period, () => { S.period = m; S.day = null; renderHome(); })))),
     sec('Bán hàng ' + monthName(period).toLowerCase(),
@@ -2150,6 +2151,19 @@ function renderHome() {
     R.make.length ? sec('Đã nấu', h('div', { class: 'panel' }, [...R.make.map(m => h('div', { class: 'trow' },
       h('span', {}, m.cot), h('span', { class: 'r num' }, h('b', {}, qfmt(m.out) + ' lít cốt'), h('small', {}, m.batches + ' mẻ, ' + qfmt(m.water) + ' lít nước' + (m.water ? ', thu hồi ' + Math.round(m.out / m.water * 100) + '%' : ''))))),
       h('div', { class: 'trow sum' }, h('span', {}, 'Tổng lít cốt'), h('span', { class: 'r num' }, qfmt(liters) + ' lít'))])) : '');
+}
+
+function goalPanel(g) {
+  if (!g) return '';
+  const pct = Math.min(100, Math.round(g.gop / g.target * 100)), left = Math.max(0, g.target - g.gop);
+  const bar = (label, val, w) => h('div', { class: 'hbar' }, h('div', { class: 't' }, h('span', {}, label), h('span', { class: 'num' }, val)), h('div', { class: 'b', style: 'width:' + Math.max(1, w) + '%' }));
+  const rows = [bar('Lãi gộp', vnd(g.gop) + ' / ' + vnd(g.target) + ' (' + Math.round(g.gop / g.target * 100) + '%)', pct)];
+  if (g.perDay > 0 && g.todayInMonth) rows.push(bar('Hôm nay', g.today + ' / ' + g.perDay + ' chai', Math.min(100, g.today / g.perDay * 100)));
+  const note = left <= 0 ? 'Đã đạt mục tiêu tháng này.' : g.daysLeft > 0
+    ? 'Còn ' + g.daysLeft + ' ngày, cần thêm ' + vnd(left) + ' lãi gộp, khoảng ' + vnd(Math.ceil(left / g.daysLeft)) + ' mỗi ngày.'
+    : 'Tháng đã qua, còn thiếu ' + vnd(left) + '.';
+  rows.push(h('div', { class: 'cap num' }, note + ' Cả tháng đã bán ' + g.bottles + ' chai.'));
+  return secEl('Mục tiêu ' + monthName(g.month).toLowerCase(), h('div', { class: 'panel' }, rows));
 }
 
 function healthPanel() {
@@ -2237,6 +2251,7 @@ const DEMO_REPORT = {
   products: [{ name: 'Sâm mía lau bịch / chai / 500ml', qty: 6, revenue: 160000 }, { name: 'Sâm hoa cúc / chai / 330ml', qty: 5, revenue: 72000 }, { name: 'Sâm mía lau bịch / chai / 330ml', qty: 2, revenue: 36000 }],
   customers: [{ code: 'x', name: 'Nguyễn Ngọc', orders: 3, spent: 124000 }, { code: 'y', name: 'Lê Trúc', orders: 2, spent: 80000 }],
   pays: [{ name: 'Tiền mặt', orders: 4, paid: 150000 }, { name: 'Momo', orders: 2, paid: 116000 }],
+  goal: { month: '2026-12', target: 5000000, perDay: 11, gop: 744422, bottles: 48, today: 8, todayInMonth: true, daysLeft: 20, daysInMonth: 31 },
   catalog: ['Sâm hoa cúc / chai / 330ml', 'Sâm hoa cúc / chai / 500ml', 'Sâm mía lau / chai / 330ml', 'Sâm mía lau / chai / 500ml', 'Sâm mía lau bịch / chai / 330ml', 'Sâm mía lau bịch / chai / 500ml', 'Sâm hoa cúc bịch / chai / 500ml'],
   make: [{ cot: 'Sâm hoa cúc', batches: 3, water: 7.5, out: 5.1 }, { cot: 'Sâm mía lau', batches: 3, water: 7.5, out: 6.1 }, { cot: 'Siro', batches: 1, water: 0.5, out: 0.5 }],
   stock: Object.entries(DEMO.make.stock).map(([name, left]) => ({ name, left, bought: left ? left * 1.25 : 1000, value: { 'Mía': 1200, 'Kỷ tử': 163326, 'Nhãn nhục': 119776, 'Thục địa': 70115, 'Lá dứa': 7600, 'Rễ tranh': 21409, 'Bịch sâm mía lau': 90000 }[name] || null }))
