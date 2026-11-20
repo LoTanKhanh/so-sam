@@ -1020,7 +1020,7 @@ function renderQExtra() {
   if (!box) return;
   const info = q.info, quo = q.quote, kids = [];
   if (info && info.member) {
-    kids.push(h('div', {}, h('b', {}, info.name || 'Thành viên'), ' · thành viên · ', h('b', {}, (info.la || 0).toLocaleString('vi-VN') + ' lá')));
+    kids.push(h('div', {}, h('b', {}, info.name || 'Thành viên'), ' · thành viên · ', h('b', {}, tichText(info) + ((info.la || 0) > 0 ? ' · ' + (info.la || 0).toLocaleString('vi-VN') + ' lá' : ''))));
     if ((info.vouchers || []).length) {
       kids.push(h('div', { style: 'margin-top:8px' }, 'Voucher của khách:'),
         h('div', { class: 'chips' }, info.vouchers.map(v => chip(v.name + ' · ' + v.text.replace('Giảm ', '−') + (v.lock ? ' (đang dùng)' : ''), q.voucher === v.id, () => { if (v.lock) return; q.voucher = q.voucher === v.id ? '' : v.id; renderQExtra(); scheduleQuote(true); }))));
@@ -1182,6 +1182,7 @@ function saveSale() {
 }
 
 /* ================= BÁN tại quầy: chọn món, đặt cho bếp, rồi mới hỏi khách tích lá ================= */
+function tichText(info) { const t = info && info.tich; return t ? 'tích ' + t.inCycle + '/' + t.goal + ' chai (còn ' + t.left + ' chai được tặng 1 chai 330ml)' : ''; }
 function laMsgPos(la, step) {
   step = step || 5000; la = Number(la) || 0;
   const use = Math.floor(la / step) * step, next = use + step, f = n => n.toLocaleString('vi-VN');
@@ -1361,7 +1362,7 @@ function renderPosCust() {
   if (!ph) kids.push(h('div', { style: 'color:var(--muted);margin-top:8px' }, 'Nhập số điện thoại để cộng lá, dùng voucher. Khách không tích thì bỏ qua, bấm thu tiền bên dưới.'));
   else if (P.loading || !info) kids.push(h('div', { style: 'color:var(--muted);margin-top:8px' }, 'Đang tìm khách…'));
   else if (info.member) {
-    kids.push(h('div', { style: 'margin-top:8px' }, h('b', {}, info.name || 'Thành viên'), ' · thành viên · ', h('b', {}, (info.la || 0).toLocaleString('vi-VN') + ' lá')));
+    kids.push(h('div', { style: 'margin-top:8px' }, h('b', {}, info.name || 'Thành viên'), ' · thành viên · ', h('b', {}, tichText(info) + ((info.la || 0) > 0 ? ' · ' + (info.la || 0).toLocaleString('vi-VN') + ' lá' : ''))));
     if ((info.vouchers || []).length) kids.push(h('div', { style: 'margin-top:8px' }, 'Voucher của khách:'), h('div', { class: 'chips' }, info.vouchers.map(v => chip(v.name + ' · ' + v.text.replace('Giảm ', '−') + (v.lock ? ' (đang dùng)' : ''), P.voucher === v.id, () => { if (v.lock) return; P.voucher = P.voucher === v.id ? '' : v.id; upd(); }))));
     if ((info.la || 0) > 0) kids.push(h('div', { style: 'margin-top:6px;color:var(--muted)' }, laMsgPos(info.la, info.laStep)));
     if ((info.la || 0) >= (info.laStep || 5000)) kids.push(h('label', { class: 'tick' }, h('input', { type: 'checkbox', checked: P.useLa, onchange: e => { P.useLa = e.target.checked; upd(); } }), 'Khách dùng lá để trừ tiền'));
