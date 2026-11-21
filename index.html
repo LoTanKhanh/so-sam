@@ -1486,13 +1486,15 @@ function renderBcqt() {
       kpi('Lãi thuần mỗi chai', x.bottles ? vnd(x.thuan / x.bottles) : '—', 'thu ' + (x.bottles ? vnd(x.rev / x.bottles) : '—') + ' mỗi chai'))),
     secEl('Kết quả kinh doanh ' + monthName(mk).toLowerCase(), h('div', { class: 'panel' },
       row('Doanh thu', x.rev, x.rev ? '100%' : ''),
-      row('Giá vốn: nguyên liệu đã dùng', x.nl, pr(x.nl)),
-      row('Giá vốn: bao bì', x.bb, pr(x.bb)),
+      row('Giá vốn: nguyên liệu chai đã bán', x.nl, pr(x.nl)),
+      row('Giá vốn: bao bì chai đã bán', x.bb, pr(x.bb)),
       row('Lãi gộp', x.gop, pr(x.gop), true),
       row('Chi phí giao hàng', x.gh, pr(x.gh)),
       row('Chi phí quảng cáo', x.qc, pr(x.qc)),
       row('Chi phí khác (điện, gas, nước…)', x.kh, pr(x.kh)),
       row('Chi phí chất lượng: hoàn tiền', x.ht, pr(x.ht)),
+      row('Chi phí chai tặng', x.gift || 0, pr(x.gift || 0)),
+      row('Chi phí hao hụt' + (x.lossLit ? ' (' + qfmt(x.lossLit) + ' lít)' : ''), x.loss || 0, pr(x.loss || 0)),
       row('Lãi thuần', x.thuan, pr(x.thuan), true))),
     cf ? secEl('Dòng tiền ' + monthName(mk).toLowerCase(), h('div', { class: 'panel' },
       row('Thu tiền bán hàng', cf.thu), row('Chi tiền mặt, chuyển khoản', cf.chi),
@@ -1502,7 +1504,7 @@ function renderBcqt() {
     hd ? secEl('Vốn và nợ đến hôm nay', h('div', { class: 'panel' },
       row('Vốn đang nằm trong kho', hd.vonKho), row('Nợ Spaylater còn lại', hd.noHienTai),
       row('Lãi lỗ cộng dồn', hd.laiLoCongDon), row('Tiền thực còn sau khi trả hết nợ', hd.tienThuc, '', true))) : '',
-    h('p', { class: 'note2' }, 'Giá vốn tạm tính theo nguyên liệu đã dùng nấu, nên đã gồm cả chai tặng và hao hụt. Dụng cụ (nhóm DC) không tính vào chi phí. Hoàn tiền tính là chi phí chất lượng, không trừ doanh thu.'),
+    h('p', { class: 'note2' }, 'Giá vốn chỉ tính chai đã bán (nguyên liệu, siro, bao bì). Chai tặng tính vào chi phí chai tặng. Hao hụt tính theo lít nước cốt và siro đã nấu mà chưa đóng chai bán hoặc tặng (gồm cả phần còn trong kho), không có bao bì. Dụng cụ (nhóm DC) không tính vào chi phí. Hoàn tiền tính là chi phí chất lượng, không trừ doanh thu.'),
     h('button', { class: 'link', style: 'margin-top:10px', onclick: () => { BC.data = null; renderBcqt(); } }, 'Tải lại'));
 }
 
@@ -2336,8 +2338,8 @@ const DEMO_MK = [{ row: 2, id: 'KM01', on: true, name: 'Mua từ 1 chai tặng 1
   { row: 4, id: 'KM03', on: false, name: 'Giảm 10% dịp Tết', aud: 'Thành viên', kind: 'Giảm giá', minQty: 0, minMoney: 0, val: '10%', giftQty: 1, per: 'Mỗi đơn', from: '2027-02-01', to: '2027-02-15', stack: false, days: 0, desc: '', state: 'Đang tắt', text: 'Giảm 10% (đến 15/2)' }];
 const DEMO_FIN = {
   months: [{ m: '2026-09', rev: 0, nl: 0, bb: 0, gop: 0, cpbh: 0, cpcl: 0, thuan: 0, gh: 0, qc: 0, kh: 0, ht: 0, bottles: 0 },
-    { m: '2026-10', rev: 310000, nl: 52000, bb: 6000, gop: 252000, cpbh: 20000, cpcl: 0, thuan: 232000, gh: 12000, qc: 8000, kh: 0, ht: 0, bottles: 19 },
-    { m: TODAY.slice(0, 7), rev: 532000, nl: 73324, bb: 0, gop: 458676, cpbh: 30000, cpcl: 5000, thuan: 423676, gh: 20000, qc: 0, kh: 10000, ht: 5000, bottles: 23 }],
+    { m: '2026-10', rev: 310000, nl: 52000, bb: 6000, gop: 252000, cpbh: 20000, cpcl: 0, gift: 6000, loss: 14000, lossLit: 2.4, thuan: 212000, gh: 12000, qc: 8000, kh: 0, ht: 0, bottles: 19 },
+    { m: TODAY.slice(0, 7), rev: 532000, nl: 73324, bb: 0, gop: 458676, cpbh: 30000, cpcl: 5000, gift: 9000, loss: 21000, lossLit: 3.1, thuan: 393676, gh: 20000, qc: 0, kh: 10000, ht: 5000, bottles: 23 }],
   cash: [{ m: TODAY.slice(0, 7), thu: 560000, chi: 210000, nomoi: 0, tra: 0, rong: 350000, cuoi: 600000, no: 361200, thuc: 238800 }],
   head: { vonKho: 497876, noHienTai: 361200, laiLoCongDon: 655676, tienThuc: 238800 }
 };
