@@ -609,7 +609,7 @@ const DEMO = {
   ],
   tiers: [
     { qty: 1, t330: 19000, t500: 28000 }, { qty: 2, t330: 36000, t500: 52000 }, { qty: 3, t330: 52000, t500: 75000 },
-    { qty: 4, t330: 68000, t500: 98000 }, { qty: 5, t330: 82000, t500: 119000 }
+    { qty: 4, t330: 69000, t500: 99000 }
   ],
   places: ['CHUNG CƯ'], pays: ['Tiền mặt', 'Banking', 'Momo'],
   health: { setup: true, lastBackup: new Date(Date.now() - 6 * 3600e3).toISOString(), backupError: '', lastSync: new Date(Date.now() - 4 * 60000).toISOString(), syncError: '', unsynced: 1, failed: 0 },
@@ -640,13 +640,25 @@ const DEMO = {
 // Giống công thức cột GIẢM GIÁ của sheet: bậc giá tính theo tổng số chai BÁN cùng cỡ (330ml hoặc 500ml)
 // trong đơn, không phân biệt loại sâm. Chai tặng không tính. Lấy bậc lớn nhất không vượt quá.
 const sizeKey = name => (/330ml/.test(name) ? 't330' : /500ml/.test(name) ? 't500' : null);
+function tierUnit(tiers, k, n) {
+  let t = null, last = null;
+  for (const x of tiers) {
+    if (typeof x[k] !== 'number') continue;
+    if (!last || x.qty > last.qty) last = x;
+    if (x.qty <= n && (!t || x.qty > t.qty)) t = x;
+  }
+  if (!t) return null;
+  if (t === last && n > t.qty) {
+    const p = tiers.find(x => x.qty === t.qty - 1 && typeof x[k] === 'number');
+    if (p) return (t[k] + (n - t.qty) * (t[k] - p[k])) / n;
+  }
+  return t[k] / t.qty;
+}
 function unitAfterDiscount(product, sizeQty, tiers) {
   const key = sizeKey(product.name);
   if (!key) return product.price;
-  let tier = null;
-  for (const t of tiers) if (t.qty <= sizeQty && (!tier || t.qty > tier.qty)) tier = t;
-  if (!tier || typeof tier[key] !== 'number') return product.price;
-  return tier[key] / tier.qty;
+  const u = tierUnit(tiers, key, sizeQty);
+  return u === null ? product.price : u;
 }
 function calcOrder(products, tiers, qty) {
   const lines = [], sold = {};
